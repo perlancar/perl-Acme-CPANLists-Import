@@ -1,16 +1,5 @@
-Revision history for Acme-CPANLists-Import-NEILB
+Revision history for Acme-CPANLists-Import
 
-0.03    2016-02-21 (PERLANCAR)
-
-        - Add description to generated modules.
-
-
-0.02    2016-02-21 (PERLANCAR)
-
-	- Remove file lib/Acme/CPANLists/Import/NEILB/Retired.pm that
-	  accidentally got copied.
-
-
-0.01    2016-02-20 (PERLANCAR)
+0.01    2016-02-21 (PERLANCAR)
 
         - First release.
