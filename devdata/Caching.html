@@ -1,0 +1,351 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="http://robm.fastmail.fm/styles/professionalblue.css">
+<title>Comparison of different PERL caching modules</title>
+</head>
+
+<body>
+<h1>Comparison of different PERL caching modules</h1>
+
+<h2>Introduction</h2>
+
+<ol>
+<li><i>Mon, Feb 2, 2004 5:00pm: Initial version</i></li>
+<li><i>Tue, Feb 3, 2004 5:16pm: Add BerkeleyDB thanks to Perrin Harkins</i></li>
+<li><i>Thu, Apr 14, 2005 2:08pm: Added notes about "size aware" performance issues thanks to John Lonergan</i></li>
+</ol>
+
+<p>I put this together because I needed to compare a number of different
+modules for a particular application.  The result was that I ended up
+writing my own cache module (Cache::FastMmap) to fit as close as possible
+to my particular requirements. This module has now been released to CPAN
+and is included in the tests below. Again, depending on your situation,
+your mileage, requirements and testing strategy may vary.</p>
+
+<h2>Disclaimer</h2>
+
+<p>Depending on what your doing, the actual difference in performance
+between the modules compared below may be insignificant in your setup. Any
+module you choose needs to be based on what you're doing, what features
+you need, what OS and system you're developing on, and only after you've
+definitely measured a performance problem that would be helped by caching
+at certain points.</p>
+<p>Remember: Measure, don't assume!</p>
+
+<h2>Testing modules/parameters</h2>
+
+<p>The output at the bottom shows a comparison of different
+PERL caching modules. There are several different
+parameters used:</p>
+
+<p><b>Data type</b><br />
+<ol>
+<li><b>bin</b> - just binary data in a scalar stored into the cache</li>
+<li><b>complex</b> - a PERL data structure. All cache
+  modules use Storable to convert this to binary data</li>
+</ol>
+</p>
+<p><b>Complexity</b><br />
+<ol>
+<li>For binary data, this is the average number of bytes in each
+  value stored into the cache</li>
+<li>For complex data, this is the average number of keys
+  in each hash-ref that's frozen and stored into the cache</li>
+</ol>
+</p>
+<p><b>Operations</b><br />
+<ol>
+<li><b>Set/S</b> - storing values into the cache as
+  fast as possible, how many 'set' operations can we
+  do per second</li>
+<li><b>Get/S</b> - after the storing process, how
+  many 'get' operations can we do per second. 85% of
+  the time we pick keys we stored in the cache, 15% of
+  the time we pick random keys that aren't in the cache</li>
+<li><b>Mix/S</b> - a mix of 'set' and 'get' operations,
+  how many we can do per second. The mix is 15% set,
+  85% get.</li>
+</ol>
+
+<p><b>Hit Rate</b><br />
+<ol>
+<li><b>GHitR</b> - depending on the cache size, and
+  the amount of data stored, we won't necessarily
+  retrieve every item stored. This gives the 'hit
+  rate' (1.000 = everything stored was retrieved)
+  during the 'get' operation run.</li>
+<li><b>MHitR</b> - as above, but 'hit rate' during
+  the mixed set/get run</li>
+</ol>
+</p>
+
+<p><b>Package</b><br />
+<ol>
+<li><b>In process hash</b> - this just uses an in
+  process hash to store the data. It's not shared,
+  and does no tracking of access time or cache size,
+  so it really represents just the fastest PERL
+  can access hash structures and copy binary data
+  around.</li>
+<li><b>Storable freeze/thaw</b> - again just an in
+  process hash, but used for 'complex' data structures,
+  which are frozen for storage, and thawed when
+  retrieved. Again, this represents the fasest PERL
+  can freeze/store/thaw complex data structures</li>
+<li><b>Cache::FastMmap</b> - my Cache::FastMmap module.
+  Two different combination of page size and number
+  of pages was used</li>
+<li><b>Cache::Mmap</b> - the Cache::Mmap module.
+  Again, two different combination of page size and
+  number of pages was used</li>
+<li><b>MLDBM::Sync::SDBM_File</b> - commonly used
+  module that uses SDBM, but includes a layer
+  for synchronisation and for splitting big values.</li>
+<li><b>IPC::MM</b> - module that uses the 'mm'
+  library to share data between processes. Includes
+  a hash and binary tree implementation</li>
+<li><b>BerkeleyDB</b> - BerkeleyDB database module.
+  Thanks Perrin Harkins for this code</li>
+<li><b>Cache::FileCache</b> - commonly used module
+  that uses files on the file system for storage.
+  Naturally file system and OS have a strong effect
+  on performance. In this case, a tmpfs filesystem
+  on linux was used</li>
+<li><b>Cache::SharedMemoryCache</b> - uses IPC::ShareLite
+  module to share data between processes</li>
+</ol>
+</p>
+
+<h2>Notes</h2>
+
+<ol>
+<li><b>Cache::SharedMemoryCache</b> was so slow, I
+  haven't included results. This is because it uses
+  a single hash-ref for ALL data. Every access to
+  read/store a single key/value requires ALL items in
+  the cache to be thawed and then re-frozen. Basically,
+  don't use this module. In some respects, this module
+  should be removed, because people incorrectly use
+  it believing that a share memory cache must be fast,
+  when clearly in this case it isn't.</li>
+<li>The hash table implementation in <b>MM::IPC</b>
+  seems to be a bit buggy. It would become 'full'
+  randomly, causing odd changes in the apparent
+  cache hit rate. It also seemed to show odd performance
+  changes. Probably best to avoid.</li>
+<li>The <b>MLDBM::Sync::SDBM_File</b> and <b>Cache::FileCache</b>
+  modules are more flexible with regard to amount of
+  data stored, growing in size dynamically up to any particular
+  limit. The <b>Cache::FastMmap</b>, <b>Cache::Mmap</b> and
+  <b>IPC::MM</b> require you to pick a maximum cache size at
+  setup</li>
+<li><b>BerkeleyDB</b> performs amazingly well.
+  It's basically limited by the Storable module for complex
+  data structures. You should
+  definitely consider it for long term persistent
+  storage of key/value data. There's no built in way to limit
+  the DB size and/or expire old values however, so it's not
+  as useful as a caching system unless you layer something
+  on top yourself.</li>
+</ol>
+</p>
+
+<h2>Notes about "size aware" caches</h2>
+
+I received an email pointing out an issue my testing hadn't
+covered which is basically that some caches when made
+"size aware" are many, many times slower.
+
+The text in the email sums this up pretty well.
+
+<pre>
+FYI 
+Changed Cache::FileCache;
+to Cache::SizeAwareFileCache;
+
+and then added  
+max_size=&gt;1000000
+to the SizeAwareFileCache
+
+and added 
+cache_size=&gt;'1m'
+to Cache::FastMmap
+
+When I did this the performance of Cache::SizeAwareFileCache fell to
+ridiculously bad levels.
+
+Package: Cache::SizeAwareFileCache Storable
+Data type: complex
+Params: cache_size 1000000
+Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |     15 |    353 |     43 | 1.000 | 1.000
+
+To get any results at all from the script I have to change the number
+of iterations to 50.
+
+When I looked at the Cache::SizeAwareFileCache in isolation it seems
+that once you specify a 'max_size' the time taken to do a set operation
+degrades rapidly as with the number of items in the cache.
+
+FYI - running strace shows that setting any value for max_size causes
+SizeAwareFileCache to start stat'ing every file in the cache every
+time you do an insert. More shocking still is that if you specify
+default_expires_in then the slowdown is twice as bad!
+</pre>
+
+This is probably something to be aware of, but I
+don't have time right now to re-run all my tests.
+
+<h2>Code</h2>
+
+<a href="cacheperl.pl">cacheperl.pl</a>
+
+<h2>Results</h2>
+
+<p>Run on a IBM x345 Dual 2.8Ghz Xeon system</p>
+
+<pre>
+Package: In process hash
+Data type: bin
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 | 221238 | 162786 | 175561 | 1.000 | 1.000
+   465 | 204582 | 137988 | 150353 | 1.000 | 1.000
+  1628 | 155666 | 105146 | 112911 | 1.000 | 1.000
+
+Package: Cache::Mmap
+Data type: bin
+Params: num_pages 11 page_size 65536
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |   3536 |   3267 |   3206 | 1.000 | 1.000
+   465 |   3225 |   3206 |   2858 | 1.000 | 1.000
+  1628 |   2254 |   3252 |   2366 | 0.900 | 0.911
+
+Package: Cache::Mmap
+Data type: bin
+Params: num_pages 89 page_size 8192
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |   9799 |   9270 |   9017 | 1.000 | 1.000
+   465 |   9183 |   8958 |   8549 | 1.000 | 1.000
+  1628 |   7840 |   8852 |   8123 | 0.739 | 0.755
+
+Package: Cache::FastMmap
+Data type: bin
+Params: num_pages 11 page_size 65536
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |  44652 |  52160 |  50459 | 1.000 | 1.000
+   465 |  42367 |  48262 |  46862 | 1.000 | 1.000
+  1628 |  37408 |  40952 |  39531 | 0.741 | 0.624
+
+Package: Cache::FastMmap
+Data type: bin
+Params: num_pages 89 page_size 8192
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |  43109 |  51545 |  49728 | 1.000 | 1.000
+   465 |  42210 |  48037 |  46371 | 1.000 | 1.000
+  1628 |  36993 |  41094 |  39425 | 0.692 | 0.650
+
+Package: MLDBM::Sync::SDBM_File
+Data type: bin
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |   2307 |  10470 |   6268 | 1.000 | 1.000
+   465 |   1800 |   7181 |   4483 | 1.000 | 1.000
+  1628 |   1137 |   3837 |   2383 | 1.000 | 1.000
+
+Package: BerkeleyDB
+Data type: bin
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |  59552 |  55383 |  57329 | 1.000 | 1.000
+   465 |  51618 |  44639 |  45628 | 1.000 | 1.000
+  1628 |  36536 |  32803 |  32315 | 1.000 | 1.000
+
+Package: IPC::MM
+Data type: bin
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+   147 |  40340 |  51513 |  46294 | 1.000 | 1.000
+   465 |  27794 |  47737 |  15490 | 0.975 | 0.971
+  1628 |   4203 |  42232 |  13471 | 0.297 | 0.297
+
+Package: Storable freeze/thaw
+Data type: complex
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |  11276 |  48164 |  31421 | 1.000 | 1.000
+    16 |   9161 |  27673 |  19149 | 1.000 | 1.000
+    55 |   5859 |  11298 |   9856 | 1.000 | 1.000
+
+Package: Cache::Mmap Storable
+Data type: complex
+Params: num_pages 89 page_size 8192
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |   5008 |   7921 |   6729 | 1.000 | 1.000
+    16 |   4361 |   6733 |   5697 | 1.000 | 1.000
+    55 |   3104 |   5661 |   4674 | 0.760 | 0.747
+
+Package: Cache::FastMmap Storable
+Data type: complex
+Params: num_pages 89 page_size 8192
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |   8897 |  28291 |  20316 | 1.000 | 1.000
+    16 |   7548 |  18964 |  14155 | 1.000 | 1.000
+    55 |   5076 |  12684 |  10367 | 0.715 | 0.638
+
+Package: MLDBM::Sync::SDBM_File Storable
+Data type: complex
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |   1630 |   8844 |   4811 | 1.000 | 1.000
+    16 |   1299 |   5528 |   3296 | 1.000 | 1.000
+    55 |    845 |   2599 |   1805 | 1.000 | 1.000
+
+Package: BerkeleyDB Storable
+Data type: complex
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |   9392 |  31425 |  21703 | 1.000 | 1.000
+    16 |   7717 |  18508 |  13999 | 1.000 | 1.000
+    55 |   4857 |   8610 |   6302 | 1.000 | 1.000
+
+Package: IPC::MM Storable
+Data type: complex
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |   8875 |  29838 |  21148 | 1.000 | 1.000
+    16 |   7081 |  19315 |   8152 | 0.981 | 0.972
+    55 |   2235 |  19424 |   7027 | 0.322 | 0.305
+
+Package: Cache::FileCache Storable
+Data type: complex
+Params:
+ Cmplx |  Set/S |  Get/S |  Mix/S | GHitR | MHitR
+-------|--------|--------|--------|-------|------
+     5 |   1297 |   2771 |   2247 | 1.000 | 1.000
+    16 |   1138 |   2533 |   2039 | 1.000 | 1.000
+    55 |    830 |   2025 |   1617 | 1.000 | 1.000
+
+</pre>
+
+<h2>Contact</h2>
+
+<a href="mailto:cpan@robm.fastmail.fm">Rob Mueller &lt;cpan@robm.fastmail.fm&gt;</a>
+</body>
+

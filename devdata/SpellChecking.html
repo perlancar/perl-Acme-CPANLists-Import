@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>An overview of spell checking modules | Kirk Kimmel [blogs.perl.org]</title>
+    <meta name="generator" content="Movable Type Pro 4.38" />
+    
+
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+    <link href="http://blogs.perl.org/users/kirk_kimmel/styles/reset.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/users/kirk_kimmel/styles/base.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.css" rel="stylesheet" type="text/css" />
+    <link rel="alternate" type="application/atom+xml" title="Entries" href="http://blogs.perl.org/users/kirk_kimmel/atom.xml" />
+
+    <link rel="start" href="http://blogs.perl.org/users/kirk_kimmel/" title="Home" />
+    <script type="text/javascript" src="http://blogs.perl.org/users/kirk_kimmel/mt.js"></script>
+    <script type="text/javascript" src="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.js"></script>
+    <script type="text/javascript">mtAttachEvent('load', prettyPrint);</script>
+    <!--
+<rdf:RDF xmlns="http://web.resource.org/cc/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<Work rdf:about="http://blogs.perl.org/users/kirk_kimmel/2012/08/an-overview-of-spell-checking-modules.html">
+<dc:title>An overview of spell checking modules</dc:title>
+<dc:description>Spell checking is one of those problems that is already solved... sorta. Like all problems it really depends on context. Take Jon Bentley&apos;s Programming pearls: a spelling checker where he examines the problem space and the differences between a spell...</dc:description>
+<dc:creator>Kimmel</dc:creator>
+<dc:date>2012-08-18T10:55:25-05:00</dc:date>
+<license rdf:resource="http://creativecommons.org/licenses/by-nc-sa/3.0/" />
+</Work>
+<License rdf:about="http://creativecommons.org/licenses/by-nc-sa/3.0/">
+</License>
+</rdf:RDF>
+-->
+
+    
+
+
+    
+    <link rel="prev bookmark" href="http://blogs.perl.org/users/kirk_kimmel/2012/08/backing-up-berliosde.html" title="Backing up Berlios.de" />
+    <link rel="next bookmark" href="http://blogs.perl.org/users/kirk_kimmel/2012/08/diy-personal-analytics.html" title="DIY personal analytics" />
+    
+    
+
+</head>
+<body class="">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56332-48']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <div id="container">
+    <div id="container-inner" class="pkg">
+        <div id="global-nav">
+        <div id="global-nav-inner">
+            <div id="global-nav-search">
+                <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    <input type="hidden" name="limit" value="20" />
+                    <label for="search">Search</label>
+                    <input id="global-search" class="query" name="search" value="Search blogs.perl.org" onfocus="cleanGlobalSearch();" />
+                    <input class="submit" type="submit" value="Go" />
+                </form>
+            </div><!-- #global-nav-search -->
+
+            <ul id="global-nav-links">
+                <li><a href="/">blogs.perl.org</a></li>
+                <li><a href="http://www.perl.org/">perl.org</a></li>
+                <li><a href="http://perlnews.org/">perlnews.org</a></li>
+                <li><a href="http://www.pm.org/">pm.org</a></li>
+		<li id="navbar-signin-widget">
+<span id="navbar-signin-widget-content" class="widget-content"></span>
+</li>
+<script type="text/javascript">
+/* <![CDATA[ */
+mtAttachEvent('usersignin', mtUpdateNavbarSignInWidget);
+mtUpdateNavbarSignInWidget();
+/* ]]> */
+</script>
+            </ul><!-- #global-nav-links -->
+        </div><!-- #global-nav-inner -->
+        </div><!-- #global-nav -->
+        
+
+
+        
+        <div id="header" class="pkg">
+        <div id="header-inner">
+            <h1 id="site-title"><a href="http://blogs.perl.org/users/kirk_kimmel/" accesskey="1">Kirk Kimmel</a></h1>
+            <div id="site-description">Solving normal problems with Perl.</div>
+        </div><!-- #header-inner -->
+        </div><!-- #header -->
+        
+        <div id="content">
+        <div id="content-inner" class="pkg">
+            <div id="content-main">
+            
+
+
+<div class="entry" id="entry-3710">
+                        <h2 class="entry-title">An overview of spell checking modules</h2>
+                        
+                        <div class="entry-meta-1 pkg">
+                            <span class="byline">By <a href="http://blogs.perl.org/users/kirk_kimmel/" class="profile-link">Kimmel</a></span>
+							<span class="dateline">on <span class="date" title="iso8601">August 18, 2012 10:55 AM</span></span>
+							
+						</div><!-- .entry-meta -->
+                        
+                        <div class="entry-body">
+                            <p>Spell checking is one of those problems that is already solved... sorta. </p>
+
+<p>Like all problems it really depends on context. Take Jon Bentley's <a href="https://dl.acm.org/citation.cfm?id=315102&dl=ACM&coll=DL&CFID=143274770&CFTOKEN=10731946">Programming pearls: a spelling checker</a> where he examines the problem space and the differences between a spell checker and a spelling corrector. I start by searching the keyword 'spell' across all of CPAN.</p>
+
+<p><code class="prettyprint">wget http://www.cpan.org/modules/01modules.index.html<br />
+ack -i spell 01modules.index.html<br />
+</code><br />
+The above covered all 22,442 distribution names but not the sub modules names. A few metacpan searches later and I was able to compile the following list.</p>
+
+<p>Direct checkers - modules that actually do the spell checking<br />
+<ul><br />
+<li><a href="https://www.metacpan.org/module/Lingua::Ispell">Lingua::Ispell</a> A module encapsulating access to the Ispell program via IPC::Open2</li><br />
+<li><a href="https://metacpan.org/module/Meta::Tool::Aspell">Meta::Tool::Aspell</a> run aspell for you. Meta is a class library of about 250 classes and is abandonware.</li><br />
+<li><a href="https://metacpan.org/module/Text::Aspell">Text::Aspell</a> Perl interface to the GNU Aspell library</li><br />
+<li><a href="https://metacpan.org/module/Text::Hunspell">Text::Hunspell</a> Perl interface to the GNU Hunspell library</li><br />
+<li><a href="https://metacpan.org/module/Text::Ispell">Text::Ispell</a> A wrapper module for Ispell. The ispell cli is called via IPC::Open2.</li><br />
+</ul></p>
+
+<p>Indirect - relies on another module to do the actual checking<br />
+<ul><br />
+<li><a href="https://metacpan.org/module/Search::Tools::SpellCheck">Search::Tools::SpellCheck</a> Uses Text::Aspell to offer spelling suggestions</li><br />
+<li><a href="https://metacpan.org/module/Text::SpellChecker">Text::SpellChecker</a> OO interface for spell-checking a block of text. Uses either Text::Aspell or Text::Hunspell</li><br />
+</ul></p>
+
+<p>POD only checkers<br />
+<ul><br />
+<li><a href="https://metacpan.org/module/Pod::Spell::CommonMistakes">Pod::Spell::CommonMistakes</a> Catches common typos in POD by using Pod::Spell to format the text and then comparing it against a custom wordlist from Pod::Spell::CommonMistakes::WordList. No system spell checker is required.</li><br />
+<li><a href="https://metacpan.org/module/Pod::Spelling">Pod::Spelling</a> Send POD to a spelling checker using either Lingua::Ispell or Text::Aspell. A test library is provided via Test::Pod::Spelling</li><br />
+<li><a href="https://metacpan.org/module/Test::Spelling">Test::Spelling</a> check for spelling errors in POD files. Pod::Spell is used for parsing and an open3 call is made to either 'spell', 'aspell', 'ispell', or 'hunspell' for spell checking.</li><br />
+</ul></p>
+
+<p>XML<br />
+<ul><br />
+<li><a href="https://www.metacpan.org/module/Apache::AxKit::Language::SpellCheck">Apache::AxKit::Language::SpellCheck</a> is an XML Text Spell Checker for the Apache AxKit. Checking is done via Text::Aspell</li><br />
+<li><a href="https://www.metacpan.org/module/xml_spellcheck">xml_spellcheck</a> is a cli application for spell checking XML files. It makes a system call to 'aspell -c' directly.</li><br />
+</ul></p>
+
+<p>Spell checking as a test<br />
+<ul><br />
+<li>Dist::Zilla::Plugin::PodSpellingTests is DEPRECATED! The old name of the PodSpelling plugin</li><br />
+<li><a href="https://www.metacpan.org/module/Dist::Zilla::Plugin::SpellingCommonMistakesTests">Dist::Zilla::Plugin::SpellingCommonMistakesTests</a> Generates a Test::Pod::Spell::CommonMistakes release test</li><br />
+<li><a href="https://metacpan.org/module/Test::Pod::Spelling::CommonMistakes">Test::Pod::Spelling::CommonMistakes</a> Checks POD for common spelling mistakes using Pod::Spell::CommonMistakes.</li><br />
+<li><a href="https://www.metacpan.org/module/Dist::Zilla::Plugin::Test::PodSpelling">Dist::Zilla::Plugin::Test::PodSpelling</a> Generates a Test::Spelling author test</li><br />
+<li><a href="https://metacpan.org/module/Perl::Critic::Policy::Documentation::PodSpelling">Perl::Critic::Policy::Documentation::PodSpelling</a> Spell check the POD. Aspell is used via an open command.</li><br />
+</ul></p>
+
+<p>Checks spelling via remote service/application<br />
+<ul><br />
+<li><a href="https://metacpan.org/module/Bing::Search::Source::Spell">Bing::Search::Source::Spell</a> uses Bing to spell check text.</li><br />
+<li><a href="https://metacpan.org/module/Lingua::AtD">Lingua::AtD</a> Provides an OO wrapper for After the Deadline grammar and spelling service.</li><br />
+<li><a href="https://www.metacpan.org/module/Lingua::MSWordSpell">Lingua::MSWordSpell</a> Uses Microsoft Word's Spellchecker over OLE automation instead of something like ispell</li><br />
+<li><a href="https://metacpan.org/module/Net::Google::Spelling">Net::Google::Spelling</a> simple OOP-ish interface to the Google SOAP API for spelling suggestions. This appears abandoned based on last update date, number of open bugs and the fact it has more failed test reports than passes.</li><br />
+<li><a href="https://metacpan.org/module/WebService::KoreanSpeller">WebService::KoreanSpeller</a> A Korean spell checker</li><br />
+</ul></p>
+
+<p>Everything else<br />
+<ul><br />
+<li><a href="https://www.metacpan.org/module/Gtk2::Spell">Gtk2::Spell</a> Perl bindings to GtkSpell, used in concert with Gtk2::TextView.</li><br />
+<li><a href="https://www.metacpan.org/module/Lingua::Jspell">Lingua::Jspell</a> Perl interface to the Jspell morphological analyzer.</li><br />
+<li><a href="https://www.metacpan.org/module/Lingua::Spelling::Alternative">Lingua::Spelling::Alternative</a> Use affix files generated by the ispell tools to return alternative spellings of a given word</li><br />
+<li><a href="https://metacpan.org/module/Pod::Spell">Pod::Spell</a> a formatter for spell checking Pod, no actual checking capabilities built in.</li><br />
+<li><a href="https://metacpan.org/module/Text::SpellChecker::GUI">Text::SpellChecker::GUI</a> Implements a user interface to Text::SpellChecker</li><br />
+<li><a href="https://metacpan.org/module/Tie::Ispell">Tie::Ispell</a> Ties a hash with an Ispell dictionary</li><br />
+<li><a href="https://metacpan.org/module/tkispell">tkispell</a> Perl/Tk user interface for Ispell</li><br />
+</ul></p>
+
+<p>While many of these modules are actively developed and useful many do not fit my requirements for this project. I want to spell check any kind of utf8 encoded text and not need an Internet connection or closed source program to accomplish this task. The first two groups direct and indirect spell checkers appear to meet these requirements.</p>
+
+<p>So which one to use? Lets take a look under the hood. GNU Ispell gives spelling suggestions if a word is not found in its dictionary. When searching for possible corrections to present it uses a <a href="https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance">DamerauâLevenshtein distance</a> of 1.</p>
+
+<p>GNU Aspell is an Ispell replacement that can handle utf-8 by default, has 70 supported language dictionaries, and supports using multiple dictionaries at once.</p>
+
+<p>Hunspell is an advanced spell checker based on MySpell that supports both dictionaries and rules. It is currently used by LibreOffice/OpenOffice and has dictionaries for 99 languages.</p>
+
+<p>It looks like Aspell and Hunspell are the front runners. I rejected Meta::Tool::Aspell because it has not been updated since 2002 and the distribution it is a part of has tons of other modules that are not needed for this problem. That leaves Text::Aspell, Text::Hunspell, Search::Tools::SpellCheck, and Text::SpellChecker left. Now before I started trying these modules out, I decided to try the command line versions of aspell and hunspell against some test data and to compare the output.</p>
+
+<p>Long story short they both generate too much noise due to how they function. If a word is in the dictionary or it can be matched then everything works out. Since I am dealing with text of any kind from source code files to memos and email there is too much noise. Things like company names, places, peoples' names, animals, plants, email addresses, and technical terms can easily be flagged as incorrect.</p>
+
+<p>I wrote a few sample programs to try and work around this problem. I will cover the results of my research in a future post.</p>
+                            
+                        </div><!-- .entry-body -->
+                        
+                        <div class="entry-meta-2 pkg">
+                            <ul>
+                                <li><a href="#comments">2 comments</a></li>
+                                <!-- <li><a href="http://blogs.perl.org/users/kirk_kimmel/2012/08/an-overview-of-spell-checking-modules.html">0 votes</a></li> -->
+                            </ul>
+                        </div>
+                    </div><!-- #entry-3710 -->
+                    
+
+
+
+
+
+<div id="comments" class="comments">
+
+
+    
+    
+        
+    <h2 class="comments-header">2 Comments</h2>
+    
+    <div id="comments-content" class="comments-content" style="clear: left;">
+        
+        <div id="comment-1154797" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <a class="commenter-profile" href="http://www.dnv.com"><img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+                    <span class="vcard author"><a title="http://www.dnv.com" href="http://www.dnv.com" rel="nofollow">MAAGNESE</a></span>
+
+                    | <a href="http://blogs.perl.org/users/kirk_kimmel/2012/08/an-overview-of-spell-checking-modules.html#comment-1154797"><abbr class="published" title="2013-09-23T08:01:53-05:00">September 23, 2013  8:01 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1154797, 'MAAGNESE')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Any new post on this issue?</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-1171928" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/google_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">robrwo</span>
+
+                    | <a href="http://blogs.perl.org/users/kirk_kimmel/2012/08/an-overview-of-spell-checking-modules.html#comment-1171928"><abbr class="published" title="2013-10-18T05:12:58-05:00">October 18, 2013  5:12 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1171928, 'robrwo')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>There's also <a href="https://metacpan.org/release/Test-HTML-Spelling" rel="nofollow">Test::HTML::Spelling</a>.</p>
+        </div>
+    </div>
+</div>
+        
+    </div>
+        
+    
+    
+
+    
+    
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header">Leave a comment</h2>
+        <div class="comments-open-content">
+
+        
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="http://blogs.perl.org/mt/mt-comments.fcgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="3710" />
+                <input type="hidden" name="__lang" value="en" />
+                <input type="hidden" name="parent_id" value="" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+                    <div id="comment-form-name">
+                        <label for="comment-author">Name</label>
+                        <input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-email">
+                        <label for="comment-email">Email Address</label>
+                        <input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-url">
+                        <label for="comment-url">URL</label>
+                        <input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
+                        <label for="comment-bake-cookie">Remember personal info?</label>
+                    </div>
+                </div>
+                <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-text">
+                    <label for="comment-text">Comments
+                    (You may use HTML tags for style)</label>
+                    <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+                    <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" />
+                    <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+    mtAttachEvent("load", mtEntryOnLoad);
+    mtAttachEvent("unload", mtEntryOnUnload);
+    //-->
+    </script>
+    
+
+
+</div>
+
+
+
+</div><!-- #content-main -->
+            
+            <div id="content-aux">
+            
+                
+                <div class="module-aux pkg" id="module-aux-about-author-1347">
+                <div class="module-inner">
+                    <h3>About Kimmel</h3>
+                    <p><img class="authorpic" src="http://blogs.perl.org/mt/mt-static/support/assets_c/2012/10/nebula_tree_by_lydia_distracted-d34ydoh-thumb-72x72-989.jpg" alt="user-pic" />
+	            I like writing Perl code and since most of it is open source I might as well talk about it too. @KirkKimmel on twitter</p>
+                    <div class="more-link"><a href="http://blogs.perl.org/mt/mt-cp.fcgi?__mode=view&amp;id=1347">More info &raquo;</a></div>
+                </div>
+                </div><!-- #module-aux-about-author -->
+
+
+
+
+                
+            
+            
+            <div class="module-aux pkg" id="module-aux-search">
+                <div class="module-inner">
+                    
+                    
+                    <h3>Search this blog</h3>
+                    
+                    
+					
+                    <div id="search-form-aux">
+                        <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    
+                            <input type="hidden" name="IncludeBlogs" value="922" />
+                    
+                            <input type="hidden" name="limit" value="20" />
+                            <label for="search">Search</label>
+                            <input id="local-search" class="query" name="search" value="" />
+                            <input class="submit" type="submit" value="Go" />
+                        </form>
+                    </div><!-- #search-form-aux -->
+                </div>
+                </div><!-- #module-aux-search -->
+                    
+
+            
+            
+                
+                
+                
+                
+            
+
+            </div><!-- #content-aux -->
+
+
+
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+
+        <div id="footer">
+        <div id="footer-inner" class="pkg">
+            <ul>
+                <li class="first"><a href="http://github.com/blogs-perl-org/blogs.perl.org/issues">Feedback welcome</a></li>
+                <li>Hosted by <a href="http://dave.org.uk">Dave Cross</a> of <a href="http://mag-sol.com/">Magnum Solutions</a> and <a href="http://aaroncrane.co.uk/">Aaron Crane</a> of <a href="http://cutbot.net/">Cutbot</a></li>
+            </ul>
+            <ul>
+                <li class="first">Free blog hosting for users of the <a href="http://perl.org">Perl Programming Language</a></li>
+            </ul> 
+
+            <div class="powered-by"><a href="http://www.movabletype.com/" target="_blank">Powered by Movable Type</a></div>
+        </div><!-- #footer-inner -->
+        </div><!-- #footer -->
+            
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+        
+    </div><!-- #container-inner -->
+    </div><!-- #container -->
+
+    
+
+</body>
+</html>
+
+
+
+
+

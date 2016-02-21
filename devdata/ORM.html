@@ -1,0 +1,894 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- Took this out for IE6ites "http://www.w3.org/TR/REC-html40/loose.dtd" -->
+<html lang="en">
+  <head>
+    <title>Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</title>
+    
+    <!-- Theme : Web safe blue PerlMonks Theme    -->
+    <link rel="stylesheet" href="/css/common.css" type="text/css" />
+    <link rel="stylesheet" href="?node_id=204962" type="text/css" />
+    <!-- No CSS Link in Display Settings -->
+    <!-- No CSS Data in Display Settings -->
+    <link rel="icon" href="/favicon.ico" />
+    
+
+  </head>
+
+  <body id="id-700283">
+<!-- monktainer -->
+<!-- monkbar2001 -->
+
+    <table id="monkbar" width="100%" border="0"
+        cellpadding="0" cellspacing="0">
+      <tr class="bannerrow">
+        <td align="left" width="100%">
+        <a href="http://pair.com">
+ <img src="http://promote.pair.com/i/pair-banner-current.gif"
+  height = "60"
+  width  = "468"
+  alt    = "Beefy Boxes and Bandwidth Generously Provided by pair Networks"
+ />
+</a>
+        </td>
+        <td rowspan="2" align="right" valign="bottom">
+          <!-- Monk Pic Turned Off In User Settings -->
+        </td>
+      </tr>
+      <tr class="monkquip">
+        <td class="monkquip"
+            valign="bottom" width="100%" >
+          Clear questions and runnable code<br />get the best and fastest answer
+        </td>
+      </tr>
+      <tr class="titlebar">
+        <td class="titlebar">
+
+          <form method="get" action="?"
+              enctype="application/x-www-form-urlencoded" >
+            &nbsp;
+            <input type="text" name="node"
+                id="search_text"
+                size="20" maxlength="300" />
+            <input class="titlebar" type="submit"
+                value="Search" />
+          </form>
+        </td>
+        <td class="titlebar" id="mb2001titlebar" align="right" >
+          <a class="titlebar" href="?">PerlMonks</a>&nbsp;&nbsp;
+        </td>
+      </tr>
+    </table>
+
+<!-- /monkbar2001 -->
+<!-- Begin title bar -->
+<table width="98%" align="center" id="titlebar-top">
+  <tbody>
+    <tr>
+      <td valign="middle" class="titlechooser">
+        <!-- superdoc title chooser(1) -->
+        <h3 class="other">Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</h3><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span></span>
+        <!-- /superdoc title chooser(1) -->
+      </td>
+      <td valign="top" align="right" class="monktitlebar">
+        <!-- monktitlebar -->
+        <ul class="topnavmenu inline-list">
+<li><a href="?node_id=109">Log&nbsp;in</a></li><li><a href="?node_id=101">Create&nbsp;a&nbsp;new&nbsp;user</a></li>
+<li><a href="?">The&nbsp;Monastery&nbsp;Gates</a></li>
+<li><a href="?node=Super%20Search">Super&nbsp;Search</a></li>
+<br />
+<li><a href="?node=Seekers%20of%20Perl%20Wisdom">Seekers&nbsp;of&nbsp;Perl&nbsp;Wisdom</a></li>
+<li><a href="?node=Meditations">Meditations</a></li>
+<li><a href="?node=Perl%20Monks%20Discussion">PerlMonks&nbsp;Discussion</a></li>
+<br />
+<li><a href="?node=Obfuscated%20Code">Obfuscation</a></li>
+<li><a href="?node=Reviews">Reviews</a></li>
+<li><a href="?node=Cool%20Uses%20for%20Perl">Cool&nbsp;Uses&nbsp;For&nbsp;Perl</a></li>
+<li><a href="?node=Perl%20News">Perl&nbsp;News</a></li>
+<li><a href="?node=Categorized%20Questions%20and%20Answers">Q&amp;A</a></li>
+<li><a href="?node=Tutorials">Tutorials</a></li>
+<br />
+<li><a href="?node=Perl%20Poetry">Poetry</a></li>
+<li><a href="?node=Recently%20Active%20Threads">Recent&nbsp;Threads</a></li>
+<li><a href="?node=Newest%20Nodes">Newest&nbsp;Nodes</a></li>
+<li><a href="?node=Offering%20Plate">Donate</a></li>
+<li><a href="?node=Tidings">What's&nbsp;New</a></li>
+</ul>
+
+
+        <!-- /monktitlebar -->
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table width="98%" align="center" id="titlebar-bottom">
+  <tbody>
+    <tr>
+      <td valign="middle" class="titlechooser">
+        <!-- superdoc title chooser(2) -->
+        <span class="attribution">on  Jul 26, 2008 at 09:13&nbsp;UTC</span> <span class="addlinks">(&nbsp;#<a href="?node_id=700283">700283</a>=perlmeditation:&nbsp;<a href="?displaytype=print;node_id=700283">print</a>&nbsp;<a href="?displaytype=print;node_id=700283;replies=1">w/&nbsp;replies</a>, <a href="?displaytype=xml;node_id=700283">xml</a>&nbsp;)</span>
+        <!-- superdoc title chooser(2) -->
+      </td>
+      <td valign="middle" align="right" class="monktitlebar">
+        <a href="?node=PerlMonks%20FAQ">Need Help??</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<!-- End title bar -->
+<!-- Begin main (monktainer) -->
+
+<center>
+  <table width="98%">
+    <tr>
+      <td  width="80%" valign="top"  class="main_content">
+        <!--contained stuff-->
+        
+
+
+<p><div class="doctext">
+<p>Hello all,</p>
+
+<p>
+I have been looking at using a ORM for my next project and I came across <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a> and <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> on CPAN. 
+</p>
+
+<p>
+It would seem that <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> is a rewrite of <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a> with a growing user community. However, apart from talk that it "learned" from the lessons of <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a>, I haven't found much information about why I should choose <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> over the other. 
+</p>
+
+<p>UPDATE: And then there is <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a>, too.</p>
+
+<p>
+I have read the documenation of all three modules, and am able to point out some differences. But what would be good is to have a complete comparison chart with pros/cons of each.
+</p>
+
+<p>
+I am starting a comparison in this thread with the little I know. I would be greatefull if you could add your input to this starter.
+</p>
+
+<p><b>UPDATE:</b> Upon reading a reply to this thread, I am now putting <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> as one of the modules to be compared. The corresponding pros/cons are updated and enlarged too. <p>
+
+
+<h1>Class::DBI</h1>
+<div class="readmore">
+<h3>Pros  (Class::DBI)</h3>
+
+<li>Mature and stable code (However, apparently with some unstabilities across versions, see below.)</li>
+
+<li>Good documentation. (IMHO)</li>
+
+<li>Ability to easily execute arbitrary SQL with <tt class='inlinecode'>set_sql</tt> from the ancestor <a href="http://search.cpan.org/search?mode=module&amp;query=Ima%3A%3ADBI">Ima::DBI</a>.</li>
+
+<li>Support for client-side triggers.</li>
+
+<li>Straightforward syntax for search (but less powerfull). </li>
+
+<li>Possibility to automagically and dynamically load metadata from an existing database following a certain non-customazible convention. (<b>is this true?</b>)</li> 
+
+<li>Customizable column inflation/deflation.</li>
+
+<li>Seemingly, supports all databases supported by <a href="http://search.cpan.org/search?mode=module&amp;query=DBI">DBI</a>  <b>(is this true?)</b></li>
+
+<li>Distinction of "primary/essential/other/all" column kinds. (Better for performance for large columns. However, <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a> is otherwise the worst performer apparently!)</li>
+
+<li>Supports UUID columns. (with a PlugIn).</li>
+
+
+<h3>Cons   (Class::DBI)</h3>
+
+<li>Seemingly shrinking user community.</li>
+
+<li>Single author => single point of failure</li>
+
+<li>Less frequent updates to the code.</li>
+
+<li>Less memory friendly.</li>
+
+<li>No support for in-memory-only objects</li>
+
+<li>Less powerfull search syntax (but simpler to use)</li>
+
+<li>No support for creating the database from class metadata <b>(is this true?)</b></li>
+
+<li>No built-in support for MANY-TO-MANY relations.</li>
+
+<li>No support for static class metadata generation.</li>
+
+<li>Doesn't really suport multiple existences od the same object on different databases, since the connection is setup from the object.</li>
+
+<li>Does NOt have seamless support for handy database <i>domains</i> (production, test, dev, staging, ...) and <i>types</i> (main, archive, reporting, ...).
+
+</div>
+
+
+<h1>DBIx::Class</h1>
+
+<div class="readmore">
+
+<h3>Pros    (DBIx::Class)</h3>
+
+<li>Already large and growing user community</li>
+
+<li>Less preferable documentation. (IMHO)</li>
+
+<li>Memory friendly for large result sets.</li>
+
+<li>Ability to perform late execution of searches</li>
+
+<li>Ability to succesively narrow down the search by calling search multiple times on the ResultSet</li>
+
+
+<li>Possibility to automagically and dynamically load class metadata from an existing database following a certain non-customazible convention.</li> 
+
+<li>Possibility to create the database from class metadata albeit following non-customizable conventions.</li>
+
+<li>Seemingly, supports all databases supported by <a href="http://search.cpan.org/search?mode=module&amp;query=DBI">DBI</a>  <b>(is this true?)</b></li>
+
+<li>Suports multiple existences od the same object on different databases, since the connection is setup from the schema.</li>
+
+<li>Supports UUID columns. (with a PlugIn).</li>
+
+<li>Support for MANY-TO-MANY relations. </li>
+
+<li>Support for <i>static</i> class metadata generation</li>
+
+
+<h3>Cons   (DBIx::Class)</h3>
+
+<li>Relatively young code (since 2005) -- though, apparently, with a relatively stable interface. <i><b>BUT</b> the author states in the documentation that it may change any time!</i></li>
+
+<li>Multiple contributions => less coherence expected.</li>
+
+<li>Reproduces <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a> in many cases, although it claims to have learned from the lessons.</li>
+
+<li>No support for in-memory-only objects (just like <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a></li>
+
+<li>No client-side triggers.</li>
+
+<li>Executing aribtrary SQL is more cumbersome (You have to set up a ResultSource for this. Note that executing arbitrary SQL may be considered by some as bad practise for an ORM.)</li>
+
+<li>The search syntax is quite complex and cumbersome.</li>
+
+
+<li>Does NOT have seamless support for handy database <i>domains</i> (production, test, dev, staging, ...) and <i>types</i> (main, archive, reporting, ...).
+
+
+
+
+</div>
+
+<h1>Rose::DB::Object</h1>
+
+<div class="readmore">
+
+<h3>Pros   (Rose::DB::Object)</h3>
+
+<li>Single author => coherent interface</li>
+
+<li>Getting popular with a growing user base.</li>
+
+<li>Excellent documentation. (IMHO)</li>
+
+<li>Best performance (apparently)</li>
+
+<li>Support for in-memory-only objects.</li>
+
+<li>Memory friendly (if you choose it to be) with <i>real</i> iterators that fetch data with the <tt class='inlinecode'>next()</tt> call. </li>
+
+<li>Built-in support for MANY-TO-MANY relations.</li>
+
+<li>Possibility to automagically load metadata from an existing database following a certain -customazible- convention.</li> 
+
+<li>Support for static once-only generation of class metadata from an existing database for better performance and custamization (later, this is typically copied, pasted, and edited by the programmer.)</li>
+
+<li>Good balance of complexity, usefullness, and cumbersomeness of query syntax (IMHO)</li>
+
+<li>Supports inner and outer JOINS seamlessly in queries thanks to <tt class='inlinecode'>require_objects</tt> and <tt class='inlinecode'>with_objects</tt> constructs. </li>
+
+<li>Meaningful non-customizable defaults for column inflation/deflation. <i>For example DATE and TIMESTAMP columns get inflated into <a href="http://search.cpan.org/search?mode=module&amp;query=DateTime">DateTime</a> objects. Support for BOOL is there too.</i></li>
+
+<li>Lazy inflation/deflation of column values. (Good for performance.)</li>
+
+<li>Supports the innovative concepts of database <i>domain</i>(production, test, dev, staging, ...) and database <i>type</i> (main, arcvhive, reporting, ..). The actual <i>default</i> database that is accessed by the application can be very easily and centrally modified. </li>
+
+<li>Suports multiple existences of the same object on different databases, since the connection is setup from the Rose::DB derived object.</li>
+
+
+<h3>Cons   (Rose::DB::Object)</h3>
+
+<li>Relatively young code (since 2005) -- though, apparently, with a relatively stable interface.</li>
+
+<li>Single author => single point of failure</li>
+
+<li>Only supports pg, MySQL, SQLite, and Informix for the moment. Oracle support is there but apparently not full.</li>
+
+<li>No support for creating the database from class metadata.</li>
+
+<li>Column inflation/deflation is not customizable but have relatively rich and meaningful defaults.</li> 
+
+<li>No client-side triggers. (but cascading deletes and loads are supported.)</li>
+
+<li>Executing arbitrary SQL is really hard to get at (need to use DBH directly) and there is no bridge between that SQL and the ORM.  <b>(is this true?)</b> <i>Note that some consider executing raw SQL in an ORM as bad practise anyway. Besides <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> query syntax is rich enough (with joins and all) that you may not ever need it.</i></li>
+
+<li>No distinction for "primary/essential/other/all" column kinds except for primary key. (Maybe a performance issue for large columns. <i>However, apparently, <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> is otherwise the best performer.)</i></li>
+
+<li>No support for UUID columns.</li>
+
+
+</div>
+
+
+<p>
+
+<p>Please help making this comparison a more complete work with your knowledge!  Especially in those areas where it is marked "<b>is this true?</b>".</p>
+
+
+<p>Perhaps I am missing some very obvious stuff.</p>
+
+
+<b>UPDATE:</b>
+<h1>CONCLUSION (TENTATIVE)</h1>
+
+<p>My humble conclusion, for the time being, is to go with <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a>.</p>
+
+<p>The reason behind this choice is the execellent documentation, seemingly coherent and well-thought-of interface, the good performnace (reported), the ability to use in-memory objects, and the clear and realtively concise query syntax. Though, not yet complete, <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> seems to be a good foundation ORM.</p>
+
+<p>For the moment, the only few downsides for me is the lack of <a href="http://search.cpan.org/search?mode=module&amp;query=Catalyst">Catalyst</a> support, the shaky Oracle support, and the lack of UUID columns. I can deal with the <a href="http://search.cpan.org/search?mode=module&amp;query=Catalyst">Catalyst</a> stuff as Catalyst does not require the Model to be really compliant, but I have to find an -elegant- way for the UUID columns. As for Oracle, I am gambling on the fact that the author will finish up the support before I need to use Oracle (My next project will be on Pg).</p>
+
+<p>One possible potential problem for the future may perhaps be the -<i>relative</i>- difficulty of executing arbitrary SQL. One possible use is Pg full-text search (available since v8.3). This haunts me as it may not be easy to fix. <b>(Is this true?)</b></p>
+
+
+
+
+
+<p>Cheers</p>
+<p>Ayhan</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div></p>
+
+<div class="notes"><center><table width="100%"  cellpadding="1" cellspacing="1" border="0" id="replies_table"><tr><th colspan="2" class="comment-on">
+<a href="?parent=700283;node_id=3333"><u>Comment on</u></a>
+Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)
+<br /><a href="?displaytype=selectcode;node_id=700283"><u>Select</u></a> or <a href="?displaytype=displaycode;node_id=700283"><u>Download</u></a> Code<span class="note-ordering"><br/>Replies are listed 'Best First'.</span></th></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700290'></a><a href="?node_id=700290">Re: Class::DBI vs. DBIx::Class comparison</a><br /><span class="attribution"> by <a href="?node_id=611550">FunkyMonk</a><span class="attribution-title"> (Canon)</span> on Jul 26, 2008 at 10:32&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-611550' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><blockquote><i></i></blockquote>
+
+You might also like to look at <a href="http://search.cpan.org/perldoc?Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> that I prefer over <a href="http://search.cpan.org/perldoc?Class%3A%3ADBI">Class::DBI</a> and <a href="http://search.cpan.org/perldoc?DBIx%3A%3AClass">DBIx::Class</a>. <a href="?node=merlyn">merlyn</a> did a series of articles on <a href="http://search.cpan.org/perldoc?Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> for The Linux Magazine:<p>
+
+<ul>
+<li><a href="http://www.stonehenge.com/merlyn/LinuxMag/col86.html">Wrap your database rows with Rose</a>
+<li><a href="http://www.stonehenge.com/merlyn/LinuxMag/col87.html">Setting up Rose::DB::Object Metadata</a>
+<li><a href="http://www.stonehenge.com/merlyn/LinuxMag/col88.html">Using Rose::DB::Object</a>
+<li><a href="http://www.stonehenge.com/merlyn/LinuxMag/col89.html">Rose::DB::Object's many-to-many mappings</a>
+</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700290;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700324'></a><ul class='indent'><a href="?node_id=700324">Re^2: Class::DBI vs. DBIx::Class comparison</a><br /><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span> on Jul 26, 2008 at 21:56&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-694625' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><p>Thank you very much for your reply and pointers</p>
+
+<p>In fact, I had already stumbled upon <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a>, but had --prematurely it seems-- eliminated it becase I had thought that <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB">Rose::DB</a> was a DBI-like interface on its own. Now that I have throughly read the documentation, I know that it's actually a wrapper around <a href="http://search.cpan.org/search?mode=module&amp;query=DBI">DBI</a> (in fact <i>using</i> it rahther then inheriting from it). I am now relieved and this ORM is back in the race for me again. (which had been only out because of my ignorance.</p>
+
+<p>Now, I have read through the articles that you have kindly pointed out. Moreover, I have gone through most of the excellent documentation.</p>
+
+<p>For the moment <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> seems to rock for me. However, I will continue the comparison approach with an update on the original post for others to benefit from this thread.</p>
+
+<p>Cheers</p>
+<p>Ayhan</p>
+
+
+
+</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700324;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='895403'></a><ul class='indent'><a href="?node_id=895403">Re^2: Class::DBI vs. DBIx::Class comparison</a><br /><span class="attribution"> by <a href="?node_id=961">Anonymous Monk</a> on Mar 25, 2011 at 06:10&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-961' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'>KiokuDB is pretty awesome, you should try it.</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=895403;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700304'></a><a href="?node_id=700304">Re: Class::DBI vs. DBIx::Class comparison</a><br /><span class="attribution"> by <a href="?node_id=315586">stvn</a><span class="attribution-title"> (Monsignor)</span> on Jul 26, 2008 at 17:12&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-315586' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><p>
+Honestly, I never used <a href="http://search.cpan.org/search?mode=module&amp;query=Class%3A%3ADBI">Class::DBI</a> and I have only used <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a>, so I will just address some of the Cons you have listed for it.
+</p>
+<blockquote><i>
+Relatively young code with a still changing interface
+</i></blockquote>
+<p>
+Actually <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> is almost 3 years old now and is being used heavily by a large number of systems in production, while it may not be "old" code, it is certainly "battle tested" code, I think that you have nothing to worry about there.
+</p>
+<p>
+As for the stability of the interface, I also wouldn't worry about that either. Because it is being used so heavily in prod already, it is very unlikely that anything but the guts will ever change. And having just spent a whole week at OSCON with the author discussing the next version, I can safely say that you have nothing to worry about.
+</p>
+<blockquote><i>
+No triggers
+</i></blockquote>
+<p>
+I am not sure that is true, you might want to ask on the mailing list. I would be <b>shocked</b> if no one had devised a way to use triggers through <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a>
+</p>
+<blockquote><i>
+Executing aribtrary SQL is more cumbersome (You have to set up a ResultSource for this.)
+</i></blockquote>
+<p>
+Actually the ResultSorce is already set up for you, it is the object that <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> uses to connect with the DBI handle. You just have to dig to get at it. As for executing arbitrary SQL, yes it is a little trickier, but once you wrap your head around it it is not that bad. Sometimes doing things you probably shouldn't do (like execute arbitrary SQL within the context of an ORM) should be a little harder. 
+</p>
+<blockquote><i>
+The search syntax is quite complex and cumbersome.
+</i></blockquote>
+<p>
+Yes, I will agree on that. For simple stuff it is not that bad, but complex stuff can get hairy. However, <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> is the project currently driving the effort to improve that with a new version of <a href="http://search.cpan.org/search?mode=module&amp;query=SQL%3A%3AAbstract">SQL::Abstract</a>. 
+</p>
+<div class="pmsig"><div class="pmsig-315586">
+-stvn
+</div></div></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700304;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='703589'></a><ul class='indent'><a href="?node_id=703589">Re^2: Class::DBI vs. DBIx::Class comparison</a><br /><span class="attribution"> by <a href="?node_id=228394">zby</a><span class="attribution-title"> (Vicar)</span> on Aug 11, 2008 at 08:27&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-228394' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'>Fey seems to have quite nice syntax - maybe it could be the SQL::Abstract replacement?</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=703589;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700337'></a><a href="?node_id=700337">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=535734">Herkum</a><span class="attribution-title"> (Parson)</span> on Jul 27, 2008 at 05:34&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-535734' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><p>I took a look at all them as well. The two I really tried experimenting with with <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> and <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a>.  One thing I did not like about DBIx::Class was that it focused on using <a href="http://search.cpan.org/search?mode=module&amp;query=SQL%3A%3AAbstract">SQL::Abstract</a> a bit much, and that module cannot really handle complicated SQL very well. Also <a href="http://search.cpan.org/search?mode=module&amp;query=SQL%3A%3AAbstract">SQL::Abstract</a> has problems when your database structure has 'issues'.  You can customize some parameters to try and get around it but it become a hassle and did not offer anything better than writing custom SQL did.</p>
+
+<p>Another issue I encountered, is that both are dependent upon a reasonable database structure.  The project I was trying to us them in, did not have one (don't ask me why I just had to work with the dam thing).  For examples, tables scattered across multiple schema's and using column names which are also SQL keywords, example LEVEL is an oracle keyword.</p>
+
+<p>My point is, that sometimes, your underlying structure is so bad that you cannot rely upon on the ORM modules to help you fix it.  Just a warning...</p></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700337;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700315'></a><a href="?node_id=700315">Re: Class::DBI vs. DBIx::Class comparison</a><br /><span class="attribution"> by <a href="?node_id=248054">Your Mother</a><span class="attribution-title"> (Chancellor)</span> on Jul 26, 2008 at 20:16&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-248054' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><p>Preface with: I was long a fan of CDBI and would still use it for simple scripts like an an inlined SQLite CGI or such; the last time I did use it was for a standalone poll script.
+</p>
+
+<p>While you say, "Mature and stable code," for CDBI, note that it has a few times been unstable with minor version to version changes breaking compatibility.
+</p>
+
+<p>The results set stuff for DBIC is <i>very</i> powerful. And though the syntax is harder to master you will find that anything non-trivial with CDBI starts to require contortions, redundancy, and spaghetti. DBIC is a much deeper/cleaner design and much less likely to let you down on the edge cases that real sites/projects are riddled with.
+</p>
+
+<p>Also, it's been awhile so I'm not sure how true this is now but in the past CDBI was quite a bit slower. Speaking of which, if speed is important, Rose is the speed winner.</p>
+
+<p>Update: <a href="http://search.cpan.org/perldoc?DBIx%3A%3AClass">DBIx::Class</a> beats <a href="http://search.cpan.org/perldoc?Rose">Rose</a> on some metrics now (there was a huge refactor in 20132014). I would no longer consider using <a href="http://search.cpan.org/perldoc?Class%3A%3ADBI">Class::DBI</a> for anything at all.</p></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700315;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700936'></a><a href="?node_id=700936">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=104919">perrin</a><span class="attribution-title"> (Chancellor)</span> on Jul 29, 2008 at 22:27&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-104919' bgcolor='ffffff'><td class='reply-body'><ul class='indent'>It's pretty easy to run arbitrary SQL with Rose::DB::Object.  Just check the docs.  There's a pretty good comparison with DBIx::Class <a href="http://osdir.com/ml/lang.perl.modules.dbi.rose-db-object/2006-06/msg00021.html">here</a>.</ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700936;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701060'></a><ul class='indent'><a href="?node_id=701060">Re^2: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=523944">clinton</a><span class="attribution-title"> (Priest)</span> on Jul 30, 2008 at 09:40&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-523944' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'>++ on that link - well worth a read.  Very balanced comparison by the author of Rose::DB</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701060;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701513'></a><ul class='indent'><a href="?node_id=701513">Re^2: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span> on Jul 31, 2008 at 20:05&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-694625' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><p>Thank you for the link. It's really good and detailed.</p>
+
+<p>However, I don't see how executing SQL is easy with <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a>. I've read the docs, but the only way I could find was to access the dbh and call DBI methods on it. That breaks the link with the ORM. Is there an other way that I am missing? </p>
+</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701513;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701521'></a><ul class='indent'><ul class='indent'><a href="?node_id=701521">Re^3: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=104919">perrin</a><span class="attribution-title"> (Chancellor)</span> on Jul 31, 2008 at 20:44&nbsp;UTC</span></ul></ul></td></tr>
+<tr class='reply-body pmnote-104919' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><ul class='indent'>Look at get_objects_from_sql() and make_manager_method_from_sql().</ul></ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701521;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700497'></a><a href="?node_id=700497">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=421282">phaylon</a><span class="attribution-title"> (Curate)</span> on Jul 28, 2008 at 10:42&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-421282' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><p>Just some comments
+
+<p>As a Class-DBI Con you have
+
+<blockquote><i>Single author => single point of failure</i></blockquote>
+
+<p>but then, in the DBIx-Class Cons you have
+
+<blockquote><i>Multiple contributions => less coherence expected.</i></blockquote>
+
+<p>What do you think is better now, more or less contributors?
+
+<p>Also, DBIx-Class seems to be both, the <i>"Second worst performance"</i> and the <i>"Second best performance"</i> which both are Pros and Cons in your list. Is it really both a pro and a con when it is in the middle?
+
+<blockquote><i>No support for customizable column inflation/deflation. (is this true?)</i></blockquote>
+
+<p>No, it's not. There are already some column inflation extensions available on CPAN.
+
+<blockquote><i>No distinction for "primary/essential/other/all" column kinds except for primary key and "others". (Maybe a performance issue for large columns.) (is this true?)</i></blockquote>
+
+<p>DBIx-Class lets you specify what fields you want to have in the resultset.
+
+<p>Also, what do you mean by <i>No support for static class metadata generation.</i>? If you mean DBIC can't create the classes for you, you haven't taken a look at DBIx-Class-Schema-Loader.
+
+<p>Also, your DBIx-Class Con list contains <b>both</b> of these:
+
+<blockquote><i>Does NOt have seamless support for handy database domains (production, test, dev, staging, ...) and types (main, archive, reporting, ...). <br />
+<br />
+Supports the innovative concepts of database domain(production, test, dev, staging, ...) and database type (main, arcvhive, reporting, ..).</i></blockquote>
+
+<!-- Node text goes above. Div tags should contain sig only -->
+<div class="pmsig"><div class="pmsig-421282">
+<hr />Ordinary morality is for ordinary people. -- Aleister Crowley
+</div></div></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700497;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701276'></a><ul class='indent'><a href="?node_id=701276">Re^2: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span> on Jul 30, 2008 at 21:14&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-694625' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><p>With regard to single/multiple authors, I have chosen to be neutral in the comparison. This way, the reader can decide on it himself/herself.</p>
+
+<p>I have taken out the second best/worst performance bit. You have a point there. </p>
+
+<p><i>Static</i> class metadata generation is a feauture of <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> only. This is distinct from <i>dynamic</i> run-time generation, which is present in <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a> too. <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a> lets you generate the code from the database and then save it in a static manner. It's a semi-manual process. On the other hand, the fully dynamic style (like that of <a href="http://search.cpan.org/search?mode=module&amp;query=DBIx%3A%3AClass">DBIx::Class</a>) is also available.</p>
+
+<p>For the other points, I have updated the comparison.</p>
+</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701276;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701395'></a><ul class='indent'><ul class='indent'><a href="?node_id=701395">Re^3: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=421282">phaylon</a><span class="attribution-title"> (Curate)</span> on Jul 31, 2008 at 11:16&nbsp;UTC</span></ul></ul></td></tr>
+<tr class='reply-body pmnote-421282' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><ul class='indent'><blockquote><i>Static class metadata generation is a feauture of Rose::DB::Object only. This is distinct from dynamic run-time generation, which is present in DBIx::Class too. Rose::DB::Object lets you generate the code from the database and then save it in a static manner.</i></blockquote>
+
+That's incorrect. DBIx-Class' Loader implementations have been able to do that for some time now. See <a href="http://search.cpan.org/perldoc?DBIx%3A%3AClass%3A%3ASchema%3A%3ALoader">DBIx::Class::Schema::Loader</a>s <tt class='inlinecode'>dump_to_dir</tt> method.
+
+<!-- Node text goes above. Div tags should contain sig only -->
+<div class="pmsig"><div class="pmsig-421282">
+<hr />Ordinary morality is for ordinary people. -- Aleister Crowley
+</div></div></ul></ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701395;node_id=3333">&#91;reply&#93;</a><br /><a href="?displaytype=displaycode;node_id=701395">[d/l]</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701508'></a><ul class='indent'><ul class='indent'><ul class='indent'><a href="?node_id=701508">Re^4: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span> on Jul 31, 2008 at 20:01&nbsp;UTC</span></ul></ul></ul></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700390'></a><a href="?node_id=700390">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=439179">BerntB</a><span class="attribution-title"> (Deacon)</span> on Jul 27, 2008 at 17:04&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-439179' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><blockquote>
+<i><b>Cons (DBIx::Class)</b><br />...<br />
+# No built-in support for MANY-TO-MANY relations. (Is this true?)</i>
+</blockquote>
+
+<p>Multiple comments and no one commenting. Hmm.. am I misunderstanding? I thought <a href="http://search.cpan.org/~ash/DBIx-Class-0.08010/lib/DBIx/Class/Relationship.pm#many_to_many">this</a>
+solved that?
+</ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700390;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701274'></a><ul class='indent'><a href="?node_id=701274">Re^2: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span> on Jul 30, 2008 at 21:06&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-694625' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><p>Thank you for your comment.  I have updated the post accordingly. </p></ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701274;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700814'></a><a href="?node_id=700814">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=36219">metaperl</a><span class="attribution-title"> (Curate)</span> on Jul 29, 2008 at 13:21&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-36219' bgcolor='ffffff'><td class='reply-body'><ul class='indent'>Dave Rolsky has 2 quality offerings:
+<ol>
+<li><a href="http://search.cpan.org/perldoc?Fey%3A%3AORM">Fey::ORM</a>
+<li><a href="http://search.cpan.org/perldoc?Alzabo">Alzabo</a>
+</ol>
+</ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700814;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701151'></a><ul class='indent'><a href="?node_id=701151">Re^2: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=37858">autarch</a><span class="attribution-title"> (Hermit)</span> on Jul 30, 2008 at 15:03&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-37858' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'>Don't use Alzabo. It is effectively dead. I'm not even using it for my own new projects any more (thus Fey::ORM).
+</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701151;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701412'></a><ul class='indent'><ul class='indent'><a href="?node_id=701412">Re^3: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=36219">metaperl</a><span class="attribution-title"> (Curate)</span> on Jul 31, 2008 at 13:13&nbsp;UTC</span></ul></ul></td></tr>
+<tr class='reply-body pmnote-36219' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><ul class='indent'>The Synopsis says it is a "Fey-based ORM" ... but googling for Fey does not yield any technical definitions... what is meant by that?
+
+<p>
+<b>UPDATE</b> - <a href="http://search.cpan.org/perldoc?Fey">Fey</a> is a SQL generator...
+</p>
+</ul></ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701412;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='700941'></a><a href="?node_id=700941">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=248054">Your Mother</a><span class="attribution-title"> (Chancellor)</span> on Jul 29, 2008 at 22:53&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-248054' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><p>I think you've asked too many questions (and updated the post a bit much if  memory serves) to get many answers to some of your subpoints. You wrote "No support for (or by) Catalyst" for both CDBI and Rose. This isn't true.</p>
+
+<p> Catalyst is entirely Model agnostic. Essentially it has support for <i>any</i> Model. Last week, for example, I rewrote two old Controllers, one RSS handler and one flat file reader, as Models. A Model can be anything that returns data. Lots of Cat folks use Rose (its reputation is very good though I haven't broken down to learn it yet; it would probably be an academic exercise since DBIC has yet to let me down). DBIC happens to be the default in the Cat docs but anyone who gets familiar with Cat would be able to easily substitute Rose.
+</p>
+</ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=700941;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701278'></a><ul class='indent'><a href="?node_id=701278">Re^2: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=694625">aulusoy</a><span class="attribution-title"> (Scribe)</span> on Jul 30, 2008 at 21:23&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-694625' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><p>Thank you for your comment. I have taken out the "cons" about catalyst from both.</p>
+</ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701278;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701732'></a><a href="?node_id=701732">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=961">Anonymous Monk</a> on Aug 01, 2008 at 15:53&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-961' bgcolor='ffffff'><td class='reply-body'><ul class='indent'>Well, let's see.<br /><br />
+
+"We do our best to maintain full backwards compatibility for published APIs, since DBIx::Class is used in production in many organisations, and even backwards incompatible changes to non-published APIs will be fixed if they're reported and doing so doesn't cost the codebase anything."<br /><br />
+
+versus<br /><br />
+
+"BUT the author states in the documentation that it may change any time!"<br /><br />
+
+No. I don't. Please correct.<br /><br />
+
+"No support for in-memory-only objects (just like Class::DBI"<br /><br />
+
+Wrong. ->new gives you a memory-only object, which you insert by calling $obj->insert.<br /><br />
+
+We also provide a CDBI-ish create() that is a shortcut for new+insert.<br /><br />
+
+"No client-side triggers."<br /><br />
+
+That's because Class::Trigger style stuff costs you every time you check it for an object without a trigger. What we do instead is make sure things are factored out enough that methods are trivial to override - for e.g.<br /><br />
+
+<pre>
+  sub insert {
+    my ( $self, @args ) = @_;
+    $self->next::method(@args);
+    $self->cds->new({})->fill_from_artist($self)->insert;
+    return $self;
+  }
+</pre><br /><br />
+
+is next to no more typing than setting an after_insert trigger in Class::DBI.<br /><br />
+
+"Executing arbitrary SQL is more cumbersome (You have to set up a ResultSource for this. Note that executing arbitrary SQL may be considered by some as bad practise for an ORM.)"<br /><br />
+
+Well, except you can pass arbitrary chunks for pretty much anything - the 'select' attr lets you control the select clause, the 'from' attr the from clause, and scalar references in the where clause are treated as literal SQL.<br /><br />
+
+And, of course, if you want to just get the $dbh, you can just get the $dbh - or run $schema->storage->dbh_do(sub { my $dbh = shift; ... }) at which point you'll get our retry/reconnect logic for free as well.<br /><br />
+
+So I think "you have to" is basically wrong, at least.<br /><br />
+
+I wonder if you need a new, fresh node (and maybe I could poke jcs, the RDBO author, to correct any similar mistakes in your stuff for his work)<br /><br />
+
+-- mst (DBIx::Class project founder)</ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701732;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='701953'></a><a href="?node_id=701953">Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)</a><br /><span class="attribution"> by <a href="?node_id=451993">siracusa</a><span class="attribution-title"> (Friar)</span> on Aug 04, 2008 at 00:34&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-451993' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><blockquote><i>Only supports pg, MySQL, SQLite, and Informix for the moment. Oracle support is there but apparently not full.</i></blockquote>
+
+<p>FWIW, Oracle support is basically complete.  Pretty much everything should work, but the Oracle code has not been tested nearly as much as the other drivers so I left the waffling in the documentation for now.</p>
+
+<blockquote><i>Column inflation/deflation is not customizable</i></blockquote>
+
+<p>It sure is.  Check out the <a href="http://search.cpan.org/dist/Rose-DB-Object/lib/Rose/DB/Object/Metadata/Column.pm#TRIGGERS">inflate/deflate column triggers</a>.</p>
+
+<blockquote><i>No client-side triggers. (but cascading deletes and loads are supported.)</i></blockquote>
+
+<p>There are client-side column triggers.  Triggers on load(), save(), etc. can be added with the usual method wrappers (override method, call SUPER::) or using any generic subroutine trigger/wrapper module on CPAN.</p>
+
+<blockquote><i>Executing arbitrary SQL is really hard to get at (need to use DBH directly) and there is no bridge between that SQL and the ORM. (is this true?)</i></blockquote>
+
+There are a few methods where you can supply complete raw SQL queries and get back ORM objects (e.g., <a href="http://search.cpan.org/dist/Rose-DB-Object/lib/Rose/DB/Object/Manager.pm#get_objects_from_sql">get_objects_from_sql()</a>), but yes, it's rare (and kind of contrary to the purose of an ORM, after all).  Literal SQL snippets can be used almost anywhere, however, using the common (among Perl ORMs) convention of passing a reference to a scalar.
+
+<blockquote><i>No distinction for "primary/essential/other/all" column kinds except for primary key. (Maybe a performance issue for large columns. However, apparently, Rose::DB::Object is otherwise the best performer.)</i></blockquote>
+
+<p>The concept exists, just in a different form.  Columns may be marked as "<a href="http://search.cpan.org/dist/Rose-DB-Object/lib/Rose/DB/Object/Metadata/Column.pm#lazy">lazy</a>," in which case they are not automatically loaded when an object is load()ed, but rather are loaded on demand.</p>
+
+<blockquote><i>No support for UUID columns.</i></blockquote>
+
+<p>I'm not sure what you mean by that, but if I'm close, you should be able to do that kind of thing using the existing column defaults mechanism combined with something like <a href="http://search.cpan.org/perldoc?Scalar%3A%3ADefer">Scalar::Defer</a>.</p></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=701953;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='702120'></a><a href="?node_id=702120">&#91;OT&#93; &quot;Rose?!?&quot; &#91;was: &quot;Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)&quot;&#93;</a><br /><span class="attribution"> by <a href="?node_id=409850">blazar</a><span class="attribution-title"> (Canon)</span> on Aug 04, 2008 at 17:01&nbsp;UTC</span></td></tr>
+<tr class='reply-body pmnote-409850' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><blockquote><i>UPDATE: And then there is <a href="http://search.cpan.org/search?mode=module&amp;query=Rose%3A%3ADB%3A%3AObject">Rose::DB::Object</a>, too.</i></blockquote>
+
+<p>I apologize for the OT and I realize the age of the post I'm replying to. But it is in some way... slightly... <strong>very</strong> slightly <em>in topic:</em> Since various <a href="http://search.cpan.org/search?mode=module&amp;query=Rose">Rose::*</a> modules were mentioned, I must say that some time ago for some reason I ignore myself, I've been wandering through quite a lot of them on the web interface to CPAN, reading their documentation -and I don't <em>need</em> them for any actual project, which is the reason why I don't know "the reason why"- and there's one thing I failed to understand at all: <strong>the name of the game! Namely: what is "Rose" supposed to mean?</strong> The very <a href="http://search.cpan.org/perldoc?Rose">Rose</a> module doesn't explain that. I thought there may be an interesting story behind it. Of course a rose is a nice flower that most people like, but then... an acronym, or a backronym? Nothing?</p>
+
+
+<div class="pmsig"><div class="pmsig-409850">
+<small><tt class='inlinecode'>-- </tt><br />
+<strike>If you can't understand the <a href="http://en.wikipedia.org/wiki/Special:Search?search=incipit">incipit</a>, then please check the <strong><a href="http://blazar.tumblr.com/post/17639246">IPB Campaign</a></strong>.</strike></small>
+</div></div></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=702120;node_id=3333">&#91;reply&#93;</a><br /><a href="?displaytype=displaycode;node_id=702120">[d/l]</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='702182'></a><ul class='indent'><a href="?node_id=702182">Re: &#91;OT&#93; &quot;Rose?!?&quot; &#91;was: &quot;Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)&quot;&#93;</a><br /><span class="attribution"> by <a href="?node_id=451993">siracusa</a><span class="attribution-title"> (Friar)</span> on Aug 04, 2008 at 21:24&nbsp;UTC</span></ul></td></tr>
+<tr class='reply-body pmnote-451993' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><p>It's short, generic, hard to misspell or mispronounce, has many positive connotations, and wasn't taken.  No acronyms, no backronyms.</p>
+
+<p>(As an aside, I considered naming my daughter (born many years after Rose:: modules hit CPAN) Rose just so I could have the following conversation.  Person: "Aw, you named your modules after your daughter!  How sweet!"  Me: "Actually, I named my daughter after my Perl modules."  (Instant geek points++)  Alas, my wife was not as enamored with the idea... ;)</p></ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=702182;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='702419'></a><ul class='indent'><ul class='indent'><a href="?node_id=702419">Re^2: &#91;OT&#93; &quot;Rose?!?&quot; &#91;was: &quot;Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)&quot;&#93;</a><br /><span class="attribution"> by <a href="?node_id=298378">Arunbear</a><span class="attribution-title"> (Parson)</span> on Aug 05, 2008 at 17:15&nbsp;UTC</span></ul></ul></td></tr>
+<tr class='reply-body pmnote-298378' bgcolor='ffffff'><td class='reply-body'><ul class='indent'><ul class='indent'><ul class='indent'>The name isn't taken in Perl land, but there is a software design tool called <a href="http://www-306.ibm.com/software/awdtools/developer/rose/index.html">Rose</a> originally produced by Rational Machines in 1992, now owned by IBM.</ul></ul></ul></td><td class='reply-body adjunct-links' align='left' valign='bottom'><a href="?parent=702419;node_id=3333">&#91;reply&#93;</a></td></tr>
+<tr class='reply' bgcolor='#eeeeee'><td  colspan='2'><a name='702645'></a><ul class='indent'><ul class='indent'><ul class='indent'><a href="?node_id=702645">Re^3: &#91;OT&#93; &quot;Rose?!?&quot; &#91;was: &quot;Re: Perl ORM comparison (Class::DBI vs. DBIx::Class vs. Rose::DB::Object)&quot;&#93;</a><br /><span class="attribution"> by <a href="?node_id=451993">siracusa</a><span class="attribution-title"> (Friar)</span> on Aug 06, 2008 at 14:32&nbsp;UTC</span></ul></ul></ul></td></tr>
+</table></center>
+</div>
+
+<p><div class="link-back back-to">
+Back to
+<a href="?node=Meditations">Meditations</a>
+</div></p>
+
+        <!--/contained stuff-->
+      </td>
+      <!--nodelet handling code (monktainer)-->
+      <td  width="20%" valign="top" align="right"  class="nodelets">
+        <!-- Begin nodelets -->
+<table class='nodelet_container' id='nodelet_container'>
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Log_In">
+      <tr><th class="nodelet_head">
+          <span class="title">Log In</span><a href="?node=About the Log In" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<form method="post" action="?" enctype="multipart/form-data" name="login">
+<div style="display:none"><input type="hidden" name="node_id" value="700283"  /></div>
+<input type="hidden" name="op" value="login" />
+<input type="hidden" name="lastnode_id" value="700283" />
+<table border="0"><tr><td>
+Username:</td><td>
+<input type="text" name="user"  size="10" maxlength="34" />
+</td></tr><tr><td>
+Password:</td><td>
+<input type="password" name="passwd"  size="10" maxlength="10" />
+
+</td></tr></table>
+<label><input type="checkbox" name="expires" value="+10y" />remember me</label>
+<input type="submit" name="login" value="Login" />
+<br />
+<a href="?node_id=2513">What's my password?</a>
+<br />
+<a href="?node_id=101">Create A New User</a>
+</form>
+
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Node_Status">
+      <tr><th class="nodelet_head">
+          <span class="title">Node Status</span><a href="?node=About the Node Status" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<a href="?displaytype=edithistory;node_id=700283">node history</a><br />Node Type: perlmeditation [id://700283]<br />Approved by <a href="?node_id=233329">tinita</a><br />Front-paged by <a href="?node_id=29008">grinder</a><br /><a href="?node_id=17645">help</a>
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Chatterbox">
+      <tr><th class="nodelet_head">
+          <span class="title">Chatterbox</span><a href="?node=About the Chatterbox" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<form method="get" action="?" enctype="multipart/form-data">
+<div style="display:none"><input type="hidden" name="node_id" value="700283"  /></div><i>and the web crawler heard nothing...</i>
+<input type="submit" name="foo" value="Refresh" />
+</form>
+<i><br /> <a href="?node=ChatterBox%20FAQ">How do I use this?</a>  |  <a href="?node_id=20842">Other CB clients</a></i>
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Other_Users">
+      <tr><th class="nodelet_head">
+          <span class="title">Other Users</span><a href="?node=About the Other Users" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<span class="other-users-text">Others <span class="other-users-blurb">examining</span> the Monastery:</span> (4)<br /><ul class="spacey-list"><li><span class='even-row'><span class='item-000'><span class='user-level-25'><span class='user-461912'><a href="?node_id=461912" title="GrandFather's home node. Level 25. Member of: janitors, pmdev">GrandFather</a></span></span></span></span></li>
+<li><span class='odd-row'><span class='item-001'><span class='user-level-18'><span class='user-70929'><a href="?node_id=70929" title="atcroft's home node. Level 18">atcroft</a></span></span></span></span></li>
+<li><span class='even-row'><span class='item-002'><span class='user-level-16'><span class='user-789891'><a href="?node_id=789891" title="stevieb's home node. Level 16. Member of: janitors">stevieb</a></span></span></span></span></li>
+<li><span class='odd-row'><span class='item-003'><span class='user-level-3'><span class='user-1088175'><a href="?node_id=1088175" title="brilant_blue's home node. Level 3">brilant_blue</a></span></span></span></span></li>
+</ul><span class='update-time'><small>As of 2016-02-21 15:44 GMT</small></span>
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Sections">
+      <tr><th class="nodelet_head">
+          <span class="title">Sections</span><a href="?node=About the Sections" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<ul class="spacey-list">
+<li><a href="?node=Seekers%20of%20Perl%20Wisdom">Seekers of Perl Wisdom</a></li>
+<li><a href="?node=Cool%20Uses%20for%20Perl">Cool Uses for Perl</a></li>
+<li><a href="?node=Meditations">Meditations</a></li>
+<li><a href="?node=Perl%20Monks%20Discussion">PerlMonks Discussion</a></li>
+<li><a href="?node=Categorized%20Questions%20and%20Answers">Categorized Q&amp;A</a></li>
+<li><a href="?node=Tutorials">Tutorials</a></li>
+<li><a href="?node=Obfuscated%20Code">Obfuscated Code</a></li>
+<li><a href="?node=Perl%20Poetry">Perl Poetry</a></li>
+<li><a href="?node=Perl%20News">Perl News</a></li>
+<li><a href="?node_id=483086">about</a></li>
+</ul>
+
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Information">
+      <tr><th class="nodelet_head">
+          <span class="title">Information</span><a href="?node=About the Information" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<ul class="spacey-list">
+<li><a href="?node=PerlMonks%20FAQ">PerlMonks FAQ</a></li>
+<li><a href="?node=the%20Perl%20Monks%20guide%20to%20the%20Monastery">Guide to the Monastery</a></li>
+<li><a href="?node=Tidings">What's New at PerlMonks</a></li>
+<li><a href="?node=Voting%2FExperience%20System">Voting/Experience System</a></li>
+<li><a href="?node=Tutorials">Tutorials</a></li>
+<li><a href="?node=Reviews">Reviews</a></li>
+<li><a href="?node=Library">Library</a></li>
+<li><a href="?node=perlman%3Aperlfaq">Perl FAQs</a></li>
+<li><a href="?node=Where%20can%20I%20find%20more%20information%20on...">Other Info Sources</a></li>
+</ul>
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Find_Nodes">
+      <tr><th class="nodelet_head">
+          <span class="title">Find Nodes</span><a href="?node=About the Find Nodes" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<ul class="spacey-list">
+<li><a href="?node_id=6364;user=961">Nodes You Wrote</a></li>
+<li><a href="?node=Super%20Search">Super Search</a></li>
+<li><a href="?node=Perl%20Monks%20User%20Search">List Nodes By Users</a></li>
+<li><a href="?node=Newest%20Nodes">Newest Nodes</a></li>
+<li><a href="?node=Recently%20Active%20Threads">Recently Active Threads</a></li>
+<li><a href="?node=Selected%20Best%20Nodes">Selected Best Nodes</a></li>
+<li><a href="?node=Best%20Nodes">Best Nodes</a></li>
+<li><a href="?node=Worst%20Nodes">Worst Nodes</a></li>
+<li><a href="?node=Saints%20in%20our%20Book">Saints in our Book</a></li>
+</ul>
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Leftovers">
+      <tr><th class="nodelet_head">
+          <span class="title">Leftovers</span><a href="?node=About the Leftovers" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<ul class="spacey-list" id="user"></ul>
+<ul class="spacey-list" id="internal">
+<li><a href="?node=The%20St.%20Larry%20Wall%20Shrine">The St. Larry Wall Shrine</a></li>
+<li><a href="?node_id=781756">Buy PerlMonks Gear</a></li>
+<li><a href="?node=Offering%20Plate">Offering Plate</a></li>
+<li><a href="?node=Awards">Awards</a></li>
+<li><a href="?op=randomnode">Random Node</a></li>
+<li><a href="?node=Quests">Quests</a></li>
+<li><a href="?node=Craft">Craft</a></li>
+<li><a href="?node=Snippets%20Section">Snippets</a></li>
+<li><a href="?node=Code%20Catacombs">Code Catacombs</a></li>
+<li><a href="?node=Editor%20Requests">Editor Requests</a></li>
+</ul><ul class="spacey-list" id="external">
+<li><a href="http://blogs.perl.org/">blogs.perl.org</a></li>
+<!--<li>[http://planet.perl.org/|Planet Perl]</li>-->
+<li><a href="http://perlsphere.net/">Perlsphere</a></li>
+<li><a href="http://ironman.enlightenedperl.org/">Perl Ironman Blog</a></li>
+<li><a href="http://perlweekly.com/">Perl Weekly</a></li>
+<li><a href="http://perl.com/">Perl.com</a></li>
+<li><a href="http://www.perlfoundation.org/perl5/index.cgi">Perl 5 Wiki</a></li>
+<li><a href="http://jobs.perl.org/">Perl Jobs</a></li>
+<li><a href="http://www.pm.org/">Perl Mongers</a></li>
+<li><a href="http://www.perl.org/">Perl Directory</a></li>
+<li><a href="http://perldoc.perl.org/">Perl documentation</a></li>
+<li><a href="https://metacpan.org/">MetaCPAN</a></li>
+<li><a href="http://cpan.perl.org/">CPAN</a></li>
+</ul>
+
+
+      </td></tr>
+
+    </tbody>
+
+<!-- Nodelet Break -->
+    <tbody class="nodelet" id="Voting_Booth">
+      <tr><th class="nodelet_head">
+          <span class="title">Voting Booth</span><a href="?node=About the Voting Booth" class="nodelethead-annot"><sup>?</sup></a>
+      </th></tr>
+      <tr><td class="nodelet_body">
+
+<h4>How many photographs, souvenirs, artworks, trophies or other decorative objects are displayed in your home?</h4><form method="post" action="?" enctype="multipart/form-data">
+<div style="display:none"><input type="hidden" name="displaytype" value="display"  /><input type="hidden" name="node_id" value="1154175"  /></div>
+<p>
+<label><input type="radio" name="vote" value="0" />Lots</label><br /> <label><input type="radio" name="vote" value="1" />Some</label><br /> <label><input type="radio" name="vote" value="2" />Very few</label><br /> <label><input type="radio" name="vote" value="3" />None</label><br /><input type="submit" value="Vote">
+</p>
+</form>
+
+<p>
+<a href="?node_id=1154175">Results (816 votes)</a>, 
+<a href="?node=past%20polls">past polls</a></p>
+      </td></tr>
+
+    </tbody>
+
+
+</table>
+
+        <!-- End nodelets -->
+      </td>
+
+      <!--/nodelet handling code (monktainer)-->
+
+    </tr>
+  </table>
+</center>
+
+<!-- End main (monktainer)-->
+<br />
+<br />
+
+<div id="footer">
+          PerlMonks graciously bestowed by <a href="?node=vroom">Tim Vroom</a>.<br/>
+      PerlMonks is a proud member of the
+      <a href="http://www.perlfoundation.org">The Perl Foundation</a>.<br />
+      Marvelous Managed Hosting and Bandwidth Generously Provided by
+      <a href="http://promote.pair.com/direct.pl?perlmonks.org">
+      pair Networks</a>
+
+  <br/>Built with the <a href="http://perl.org">Perl programming language</a>.
+</div>
+<!-- /monktainer -->
+
+  
+  </body>    
+</html>

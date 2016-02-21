@@ -1,0 +1,585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>Thread pool for a boss/worker model | Kal [blogs.perl.org]</title>
+    <meta name="generator" content="Movable Type Pro 4.38" />
+    
+
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+    <link href="http://blogs.perl.org/users/kal/styles/reset.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/users/kal/styles/base.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.css" rel="stylesheet" type="text/css" />
+    <link rel="alternate" type="application/atom+xml" title="Entries" href="http://blogs.perl.org/users/kal/atom.xml" />
+
+    <link rel="start" href="http://blogs.perl.org/users/kal/" title="Home" />
+    <script type="text/javascript" src="http://blogs.perl.org/users/kal/mt.js"></script>
+    <script type="text/javascript" src="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.js"></script>
+    <script type="text/javascript">mtAttachEvent('load', prettyPrint);</script>
+    
+    
+
+
+    
+    <link rel="prev bookmark" href="http://blogs.perl.org/users/kal/2012/09/acceptable-community-standards.html" title="Acceptable Community Standards" />
+    
+    
+    
+
+</head>
+<body class="">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56332-48']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <div id="container">
+    <div id="container-inner" class="pkg">
+        <div id="global-nav">
+        <div id="global-nav-inner">
+            <div id="global-nav-search">
+                <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    <input type="hidden" name="limit" value="20" />
+                    <label for="search">Search</label>
+                    <input id="global-search" class="query" name="search" value="Search blogs.perl.org" onfocus="cleanGlobalSearch();" />
+                    <input class="submit" type="submit" value="Go" />
+                </form>
+            </div><!-- #global-nav-search -->
+
+            <ul id="global-nav-links">
+                <li><a href="/">blogs.perl.org</a></li>
+                <li><a href="http://www.perl.org/">perl.org</a></li>
+                <li><a href="http://perlnews.org/">perlnews.org</a></li>
+                <li><a href="http://www.pm.org/">pm.org</a></li>
+		<li id="navbar-signin-widget">
+<span id="navbar-signin-widget-content" class="widget-content"></span>
+</li>
+<script type="text/javascript">
+/* <![CDATA[ */
+mtAttachEvent('usersignin', mtUpdateNavbarSignInWidget);
+mtUpdateNavbarSignInWidget();
+/* ]]> */
+</script>
+            </ul><!-- #global-nav-links -->
+        </div><!-- #global-nav-inner -->
+        </div><!-- #global-nav -->
+        
+
+
+        
+        <div id="header" class="pkg">
+        <div id="header-inner">
+            <h1 id="site-title"><a href="http://blogs.perl.org/users/kal/" accesskey="1">Kal</a></h1>
+            <div id="site-description">A blog about the Perl programming language</div>
+        </div><!-- #header-inner -->
+        </div><!-- #header -->
+        
+        <div id="content">
+        <div id="content-inner" class="pkg">
+            <div id="content-main">
+            
+
+
+<div class="entry" id="entry-3780">
+                        <h2 class="entry-title">Thread pool for a boss/worker model</h2>
+                        
+                        <div class="entry-meta-1 pkg">
+                            <span class="byline">By <a href="http://blogs.perl.org/users/kal/" class="profile-link">Kal</a></span>
+							<span class="dateline">on <span class="date" title="iso8601">September  2, 2012  7:20 PM</span></span>
+							
+						</div><!-- .entry-meta -->
+                        
+                        <div class="entry-body">
+                            <p>This is a pretty simple idea - a boss thread assigns work to a pool of worker threads who do nothing until some work enters their queue. This way the boss can fill a queue very quickly and you have multiple back end processes that can consume that queue.</p>
+
+<p>I'm using threading and not an async thing because some of the work I'll be assigning to threads are long-polling operations. The workers will hit some REST API route on some other application, and some of those routes take up to 30 seconds to complete or have dependencies or followup work. Rather than block and spin in an async call, for my tasks, its easier to have a queue of work and workers that execute them.</p>
+
+<p>Each task may have multiple sub-tasks associated that are ordered, so each worker will be assigned a "task group". This way it can manage its own dependencies and I can manage the total load on both the server its sitting on and the cloud, and the database. Its not about "speed" in the sense of less time to execute, its more about keeping a small pipe filled and not blocking other workers while on a long blocking call.</p>
+
+<p>There aren't a lot of thread pooling type modules that I could see on CPAN. Its not a complex task, but there are a lot of things to think about. The <a href="http://search.cpan.org/~elizabeth/Thread-Pool-0.33/lib/Thread/Pool.pm">Thread::Pool</a> module causes problems with the perl MongoDB module, and thats really the only recent option that seems to fit my problem set.</p>
+
+<p>I ended up rolling my own module using threads::shared, Thread::Queue, and Thread::Semaphore. I basically spawn X amount of threads using the semaphore as a creator of the tokens to keep the number of threads at the right level. I use shared queues and non-blocking checks against the queue from the worker to get its work. I use a shared variable with each worker thread to control its loop and kill it when its time. This also allows for things like stopping the boss and waiting for the workers to drain the queue before killing the pool. You can add workers and stop individual workers. You can keep the workers running and kill the boss, or kill the workers and let the boss run. Boss/workers have callback functions for executing their tasks. Its shiny and runs great.</p>
+
+<p>I'm 99% certain my code will pass any test case I throw against it and it will work fine for what I'll be using it for (work queue for a back-office cloud controller). </p>
+
+<p>Did I miss a module? Is there something better out there that is less intrusive than Thread::Pool? If not I'll clean up the POD on this and submit it to CPAN but I'd rather not duplicate with Yet Another CPAN Module that already has 10 different variations.</p>
+                            
+                        </div><!-- .entry-body -->
+                        
+                        <div class="entry-meta-2 pkg">
+                            <ul>
+                                <li><a href="#comments">9 comments</a></li>
+                                <!-- <li><a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html">0 votes</a></li> -->
+                            </ul>
+                        </div>
+                    </div><!-- #entry-3780 -->
+                    
+
+
+
+
+	<div class="entry-tags">
+    <h4>Tagged as<span class="delimiter">:</span></h4>
+    <span><a href=
+"javascript:void(0)" onclick="location.href='http://blogs.perl.org/mt/mt-search.fcgi?blog_id=1494&amp;tag=cloud%20threadpool%20bossworker&amp;limit=20';return false;" rel="tag">cloud threadpool bossworker</a></span>
+     </div>
+
+
+<div id="comments" class="comments">
+
+
+    
+    
+        
+    <h2 class="comments-header">9 Comments</h2>
+    
+    <div id="comments-content" class="comments-content" style="clear: left;">
+        
+        <div id="comment-201237" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">happymorning</span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201237"><abbr class="published" title="2012-09-02T21:49:49+00:00">September  2, 2012  9:49 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201237, 'happymorning')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>I can propose a very different way using <a href="http://www.zeromq.org/" rel="nofollow">zeroMQ </a>.</p>
+
+<p>It a powerful yet simple library for messaging between processes, you may implements everything you need just using simples processes communicating easily with each others.<br />
+Using only messaging, you drop a whole class of concurrent acces issues.</p>
+
+<p>You have a <a href="http://search.cpan.org/dist/ZeroMQ/lib/ZeroMQ.pm" rel="nofollow">perl module</a> for it . </p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201242" class="comment entry-author-comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">Kal</span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201242"><abbr class="published" title="2012-09-02T22:56:44+00:00">September  2, 2012 10:56 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201242, 'Kal')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>@happymorning - I thought about using an MQ for the queues/thread control/boss messaging since the org is using a lot of ActiveMQ already, but this is pretty simple - a process from the UI or from someplace else says "Take this job and run it!" and the master grabbing that job and then saying "Worker, do this job". There is only one Boss per work queue, so I'm just using a collection on Mongo for getting work into and out of the Master Queue. Simple, quick, easy.</p>
+
+<p>Zeromq is pretty cool from what I can tell! Its just overkill for what I need on the messaging/queue side.</p>
+
+<p>Its *thread management* that I really want to make sure I'm doing right.</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201280" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <a class="commenter-profile" href="http://savage.net.au/"><img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+                    <span class="vcard author"><a title="http://savage.net.au/" href="http://savage.net.au/">Ron Savage</a></span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201280"><abbr class="published" title="2012-09-03T01:54:08+00:00">September  3, 2012  1:54 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201280, 'Ron Savage')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Hi Kal</p>
+
+<p>What about these Perl modules:<br />
+1) Gearman<br />
+2) Hopkins<br />
+3) TheSchwartz<br />
+4) Helios (which uses TheSchwatrz)</p>
+
+<p>In fact, it'd be marvellous if you'd try all of them and write a comparative review for those of us who haven't actually tried any...<br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201320" class="comment comment-reply entry-author-comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">Kal</span> replied to <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201280">comment from Ron Savage</a>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201320"><abbr class="published" title="2012-09-03T03:31:17+00:00">September  3, 2012  3:31 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201320, 'Kal')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Wow, I didn't see these, I'm still used to looking for relatively self-descriptive names I guess. :) </p>
+
+<p>Gearman is definitely lean in terms of dependencies, but its single threaded and I'd still have to manage multiple worker threads (and a server thread and a manager to stuff tasks), or just have separate apps to run each of these, though the complexity drops a bit. Fits most of the requirements but has stuff I don't want or need (socketed client/servers, IPC).</p>
+
+<p>Hopkins is a static job runner - they call themselves a better cron job, and this fulfills part of what I need..but it requires static configuration of XML up front. Under the hood, running POE::Component::JobQueue for its heavy lifting which is async and not threaded, and will block on some of my tasks. Not quite what I need.</p>
+
+<p>TheSchwartz/Helios - also has the ability of registering capabilities, but adds in the requirements of a DBI driven database. Much closer to what I'm looking for, but a bit of overkill. Also async and most likely will block on a few of my tasks. <br />
+ <br />
+My problem was I was also searching for lighter-weight thread pooling modules, to use across multiple apps for consistency, and I didn't see the modules you listed. I don't need any real IPC other than to signal a thread to exit its loop. I don't really want/need additional sockets open, other than a single outbound connection to a DB or job queue.</p>
+
+<p>One task for this thread pool will be on a VM with only a single worker to manage jobs coming in from a master controller. A single threaded queue/run program would actually suffice here but there are a couple of situations where a system will be heavily using its workers and I'd like them to be able to service more than one at a time. </p>
+
+<p>Its really the controller(s) I'm worried about. But I don't need a million workers, I'm starting with 5 and will be scaling to ~25, and Future Growth may increase that. I just was looking for a Simple Thread Pool management module, very much like Thread::Pool, except one that worked with non-thread friendly modules like MongoDB. ;(</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201590" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">rhesa</span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201590"><abbr class="published" title="2012-09-03T13:14:06+00:00">September  3, 2012  1:14 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201590, 'rhesa')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Another suggestion: <a href="http://kr.github.com/beanstalkd/">beanstalkd</a> and the Perl module <a href="https://metacpan.org/module/Beanstalk::Client">Beanstalk::Client</a>.</p>
+
+<p>I use this by forking off a number of workers per machine. Then I add more machines as load increases. Having isolated processes that only talk to the beanstalkd server means I don't have to deal with synchronisation or blocking issues. This makes for very simple and efficient code.</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201662" class="comment entry-author-comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">Kal</span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201662"><abbr class="published" title="2012-09-03T15:45:37+00:00">September  3, 2012  3:45 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201662, 'Kal')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>beanstalk seems to be very much like Gearman. Its a TCP client/server model in which you feed jobs into 'tubes' or queues on the server, and workers which join to the server and then consume those jobs. You can't register capabilities, but I'm assuming you could have differently capable workers pulling jobs from different tubes. This looks like a more simple API than Gearman, but the source for Gearman is easier to read - the beanstalk client source looks - err.. optimized, but I'd have to benchmark to see if it makes any difference. :)</p>
+
+<p>The problem with these for my application lies in the additional dependency of a job server. Both of these server daemons are written in C, which I could find packages for, but thats yet another dependency chain to track. A partial framework already exists for this design and its all in perl, and I'd rather continue to update this design (DB backend), which works great, than switch to a new client/server model.</p>
+
+<p>I've finished a rough draft of Thread::Workers. I need to polish its edges a bit and make it pretty before I expose it to the world.</p>
+
+<p>Its a simplistic pool/queue design with no priorities - in my case, I need FIFO access for all queues. I assume if one wanted priorities, one could create multiple pools of boss/workers and manage the priorities from the main application thread using this module.</p>
+
+<p>For me, its enough to create a single pool. I hook the boss's fetch work callback to a mongo query.  If queries are returned, this is fed into a FIFO queue which the idle workers pick up on first come, first served basis. </p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201802" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">chimerix</span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201802"><abbr class="published" title="2012-09-03T19:59:11+00:00">September  3, 2012  7:59 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201802, 'chimerix')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Have you seen Parallel::Workers or Thread::Pool on CPAN?</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201892" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">renodino</span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201892"><abbr class="published" title="2012-09-03T23:11:44+00:00">September  3, 2012 11:11 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201892, 'renodino')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Gratuitous self promotion: <a>Thread::Apartment</a> provides a pooling interface, and should allow use of direct method calls to threaded objects.</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-201912" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <a class="commenter-profile" href="http://savage.net.au/"><img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+                    <span class="vcard author"><a title="http://savage.net.au/" href="http://savage.net.au/">Ron Savage</a></span>
+
+                    | <a href="http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html#comment-201912"><abbr class="published" title="2012-09-04T00:10:21+00:00">September  4, 2012 12:10 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(201912, 'Ron Savage')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Hi Kal</p>
+
+<p>Beanstalk::Client is written by Graham Barr, which is a big plus in my books.</p>
+
+<p>BTW: I haven't used any of these, but would be v-e-r-y confused if confronted with the need to to do.</p>
+
+<p>As for overlooking those modules I listed, I'm not surprised. Many modules have obscurantistic names.</p>
+
+<p>That's why I keep a tiddlywiki (check them out!) (one of many) for Perl with a section dedicated to 'Interesting Modules' I stumble across.</p>
+
+<p>I guess it's time to calve out that list into its own web page and put it on my site. I'll do that over the next week and blog on blogs.perl.org.</p>
+
+<p>Right now I'm chasing an embarrassingly huge bug on GraphViz2::Marpa........</p>
+
+<p>Cheers<br />
+Ron<br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    </div>
+        
+    
+    
+
+    
+    
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header">Leave a comment</h2>
+        <div class="comments-open-content">
+
+        
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="http://blogs.perl.org/mt/mt-comments.fcgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="3780" />
+                <input type="hidden" name="__lang" value="en" />
+                <input type="hidden" name="parent_id" value="" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+                    <div id="comment-form-name">
+                        <label for="comment-author">Name</label>
+                        <input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-email">
+                        <label for="comment-email">Email Address</label>
+                        <input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-url">
+                        <label for="comment-url">URL</label>
+                        <input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
+                        <label for="comment-bake-cookie">Remember personal info?</label>
+                    </div>
+                </div>
+                <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-text">
+                    <label for="comment-text">Comments
+                    (You may use HTML tags for style)</label>
+                    <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+                    <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" />
+                    <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+    mtAttachEvent("load", mtEntryOnLoad);
+    mtAttachEvent("unload", mtEntryOnUnload);
+    //-->
+    </script>
+    
+
+
+</div>
+
+
+
+</div><!-- #content-main -->
+            
+            <div id="content-aux">
+            
+                
+                <div class="module-aux pkg" id="module-aux-about-author-2021">
+                <div class="module-inner">
+                    <h3>About Kal</h3>
+                    <p><img class="authorpic" src="http://blogs.perl.org/mt/mt-static/images/default-userpic-50.jpg" alt="user-pic" />
+	            I stuff with perl and stuff.</p>
+                    <div class="more-link"><a href="http://blogs.perl.org/mt/mt-cp.fcgi?__mode=view&amp;id=2021">More info &raquo;</a></div>
+                </div>
+                </div><!-- #module-aux-about-author -->
+
+
+
+
+                
+            
+            
+            <div class="module-aux pkg" id="module-aux-search">
+                <div class="module-inner">
+                    
+                    
+                    <h3>Search this blog</h3>
+                    
+                    
+					
+                    <div id="search-form-aux">
+                        <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    
+                            <input type="hidden" name="IncludeBlogs" value="1494" />
+                    
+                            <input type="hidden" name="limit" value="20" />
+                            <label for="search">Search</label>
+                            <input id="local-search" class="query" name="search" value="" />
+                            <input class="submit" type="submit" value="Go" />
+                        </form>
+                    </div><!-- #search-form-aux -->
+                </div>
+                </div><!-- #module-aux-search -->
+                    
+
+            
+            
+                
+                
+                
+                
+            
+
+            </div><!-- #content-aux -->
+
+
+
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+
+        <div id="footer">
+        <div id="footer-inner" class="pkg">
+            <ul>
+                <li class="first"><a href="http://github.com/blogs-perl-org/blogs.perl.org/issues">Feedback welcome</a></li>
+                <li>Hosted by <a href="http://dave.org.uk">Dave Cross</a> of <a href="http://mag-sol.com/">Magnum Solutions</a> and <a href="http://aaroncrane.co.uk/">Aaron Crane</a> of <a href="http://cutbot.net/">Cutbot</a></li>
+            </ul>
+            <ul>
+                <li class="first">Free blog hosting for users of the <a href="http://perl.org">Perl Programming Language</a></li>
+            </ul> 
+
+            <div class="powered-by"><a href="http://www.movabletype.com/" target="_blank">Powered by Movable Type</a></div>
+        </div><!-- #footer-inner -->
+        </div><!-- #footer -->
+            
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+        
+    </div><!-- #container-inner -->
+    </div><!-- #container -->
+
+    
+
+</body>
+</html>
+
+
+
+
+

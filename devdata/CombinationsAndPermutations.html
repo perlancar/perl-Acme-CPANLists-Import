@@ -1,0 +1,647 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>Short survey of modules for combinations and permutations | Dana Jacobsen [blogs.perl.org]</title>
+    <meta name="generator" content="Movable Type Pro 4.38" />
+    
+
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+    <link href="http://blogs.perl.org/users/dana_jacobsen/styles/reset.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/users/dana_jacobsen/styles/base.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.css" rel="stylesheet" type="text/css" />
+    <link rel="alternate" type="application/atom+xml" title="Entries" href="http://blogs.perl.org/users/dana_jacobsen/atom.xml" />
+
+    <link rel="start" href="http://blogs.perl.org/users/dana_jacobsen/" title="Home" />
+    <script type="text/javascript" src="http://blogs.perl.org/users/dana_jacobsen/mt.js"></script>
+    <script type="text/javascript" src="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.js"></script>
+    <script type="text/javascript">mtAttachEvent('load', prettyPrint);</script>
+    
+    
+
+
+    
+    <link rel="prev bookmark" href="http://blogs.perl.org/users/dana_jacobsen/2014/10/partitions-of-an-integer.html" title="Partitions of an Integer" />
+    
+    
+    
+
+</head>
+<body class="">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56332-48']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <div id="container">
+    <div id="container-inner" class="pkg">
+        <div id="global-nav">
+        <div id="global-nav-inner">
+            <div id="global-nav-search">
+                <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    <input type="hidden" name="limit" value="20" />
+                    <label for="search">Search</label>
+                    <input id="global-search" class="query" name="search" value="Search blogs.perl.org" onfocus="cleanGlobalSearch();" />
+                    <input class="submit" type="submit" value="Go" />
+                </form>
+            </div><!-- #global-nav-search -->
+
+            <ul id="global-nav-links">
+                <li><a href="/">blogs.perl.org</a></li>
+                <li><a href="http://www.perl.org/">perl.org</a></li>
+                <li><a href="http://perlnews.org/">perlnews.org</a></li>
+                <li><a href="http://www.pm.org/">pm.org</a></li>
+		<li id="navbar-signin-widget">
+<span id="navbar-signin-widget-content" class="widget-content"></span>
+</li>
+<script type="text/javascript">
+/* <![CDATA[ */
+mtAttachEvent('usersignin', mtUpdateNavbarSignInWidget);
+mtUpdateNavbarSignInWidget();
+/* ]]> */
+</script>
+            </ul><!-- #global-nav-links -->
+        </div><!-- #global-nav-inner -->
+        </div><!-- #global-nav -->
+        
+
+
+        
+        <div id="header" class="pkg">
+        <div id="header-inner">
+            <h1 id="site-title"><a href="http://blogs.perl.org/users/dana_jacobsen/" accesskey="1">Dana Jacobsen</a></h1>
+            <div id="site-description">A blog about the Perl programming language</div>
+        </div><!-- #header-inner -->
+        </div><!-- #header -->
+        
+        <div id="content">
+        <div id="content-inner" class="pkg">
+            <div id="content-main">
+            
+
+
+<div class="entry" id="entry-6704">
+                        <h2 class="entry-title">Short survey of modules for combinations and permutations</h2>
+                        
+                        <div class="entry-meta-1 pkg">
+                            <span class="byline">By <a href="http://blogs.perl.org/users/dana_jacobsen/" class="profile-link">Dana Jacobsen</a></span>
+							<span class="dateline">on <span class="date" title="iso8601">February 14, 2015  5:32 AM</span></span>
+							
+						</div><!-- .entry-meta -->
+                        
+                        <div class="entry-body">
+                            <p>This is a short look at some modules for generating combinations and permutations.  There are likely more modules that aren't listed.  RosettaCode has examples of writing the <a href="http://rosettacode.org/wiki/Combinations">combinations</a> and <a href="http://rosettacode.org/wiki/Permutations">permutations</a> functions by hand.</p>
+
+<p>
+<table summary="Table showing modules with combinations and permutations.">
+<caption>Combinations and Permutations</caption>
+  <style> table,th,td { border:1px solid black;  padding:5px; } </style>
+<tr> 
+     <th>Module</th>
+     <th>Impl</th>
+     <th>Comb</th>
+     <th>Perm</th>
+     <th>Comb w/rep</th>
+     <th>Perm w/rep</th>
+     <th>Derange</th>
+     <th>Speed</th>
+     <th>Order</th>
+     <th>Comments</th>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/Algorithm::Combinatorics">Algorithm::Combinatorics</a></td>
+     <td>XS</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">+</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>Fast iterator or array</td>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/ntheory">ntheory</a></td>
+     <td>XS</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td> 
+     <td style="background:#fdd">no</td> 
+     <td style="background:#bfb">++</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>Fast block call</td>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/Math::Combinatorics">Math::Combinatorics</a></td>
+     <td>Perl</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fbb">- -</td>
+     <td>Impl</td>
+     <td>Iterator or array</td>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/Algorithm::FastPermute">Algorithm::FastPermute</a></td>
+     <td>XS</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#9f9">+++</td>
+     <td>Impl</td>
+     <td>Fast block call</td>
+</tr>
+<tr> 
+     <td><a href="https://metacpan.org/pod/Algorithm::Permute">Algorithm::Permute</a></td>
+     <td>XS</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">+</td>
+     <td>Impl</td>
+     <td>Iterator or fast block call</td>
+</tr>
+<tr> 
+     <td><a href="https://metacpan.org/pod/Algorithm::Loops">Algorithm::Loops</a></td>
+     <td>Perl</td>
+     <td style="background:#fdd">no</td> 
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">+</td>
+     <td>Impl</td>
+     <td>Iterator</td>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/List::Permutor">List::Permutor</a></td>
+     <td>Perl</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">-</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>Iterator</td>
+</tr>
+<tr> 
+     <td><a href="https://metacpan.org/pod/Iterator::Misc">Iterator::Misc</a></td>
+     <td>Perl</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fbb">- -</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>Iterator</td>
+</tr>
+<tr> 
+     <td><a href="https://metacpan.org/pod/Math::Permute::Array">Math::Permute::Array</a></td>
+     <td>Perl</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fbb">- -</td>
+     <td>Impl</td>
+     <td>Iterator or index</td>
+</tr>
+<tr> 
+     <td><a href="https://metacpan.org/pod/Math::Permute::List">Math::Permute::List</a></td>
+     <td>Perl</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td></td>
+     <td>Impl</td>
+     <td>Block call</td>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/Math::GSL::Permutation">Math::GSL::Permutation</a></td>
+     <td>XS</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">-</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>function interface</td>
+</tr>
+<tr>
+     <td><a href="https://metacpan.org/pod/Math::Disarrange::List">Math::Disarrange::List</a></td>
+     <td>Perl</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td></td>
+     <td>Impl</td>
+     <td>Block call</td>
+</tr>
+<!-- 
+<tr> 
+     <td><a href="https://metacpan.org/pod/Math::Combinations">Math::Combinations</a></td>
+     <td>Perl</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fbb">- -</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>Single formatted string of all combinations</td>
+</tr>
+-->
+<tr> 
+     <td><a href="https://metacpan.org/pod/Math::GSL::Combination">Math::GSL::Combination</a></td>
+     <td>XS</td>
+     <td style="background:#dfd">yes</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#fdd">no</td>
+     <td style="background:#dfd">+</td>
+     <td style="background:#dfd">Lexico</td>
+     <td>iterator or by index</td>
+</tr>
+</table>
+</p>
+
+                            <p>For counting the total number rather than generating actual vectors,
+  <a href="https://metacpan.org/pod/Math::Counting">Math::Counting</a>,
+  <a href="https://metacpan.org/pod/ntheory">ntheory</a>, or
+  <a href="https://metacpan.org/pod/Math::Pari">Math::Pari</a>
+probably have what you need.  Also see the <a href="http://rosettacode.org/wiki/Combinations_and_permutations">RosettaCode task</a>.</p>
+     
+<p>Some modules such as Algorithm::Combinatorics, ntheory, and List::Permutor give results in guaranteed lexicographic order.  The other modules return data in an order corresponding to whatever internal algorithm is used.  For an example unsorted 7 element array, each of the "Impl"-order modules gave a unique sequence (that is, each modules gave a different sequence from any other), while all "Lexico"-order modules gave identical sequences.</p>
+
+<p>The speed is an approximate rating of how fast the permutations or combinations are generated with a relatively large set.
+Looping over the 479 million permutations of a 12 item set takes only 12 seconds for Algorithm::FastPermute, 1 minute for ntheory, 6 minutes for Algorithm::Permute, 12 minutes for Algorithm::Combinatorics and Algorithm::Loops, 30 minutes for List::Permutor, 37 minutes for Math::Combinatorics, 39 minutes for Math::GSL::Permutation, 42 minutes for the common example  <a href="http://docstore.mik.ua/orelly/perl/cookbook/ch04_20.htm">tsc-permute</a>, 48 minutes for Iterator::Misc.</p>
+
+<p>The <a href="http://learn.perl.org/faq/perlfaq4.html#How-do-I-permute-N-elements-of-a-list">perlfaq</a> recommends List::Permutor, Algorithm::Permute, and Algorithm::Loops.  I believe Algorithm::Combinatorics to be a better choice to point people to, as it is likely to cover all needs and calling styles, not just permutations.  The results come in lexicographic order rather than implementation defined.  It also has excellent documentation.</p>
+
+<p>In all examples, assume we have done something like this setup, and wish to see all permutations of the data, or all combinations of 3 elements.</p>
+<p><pre><code class="prettyprint">        use feature 'say';
+        my @data = (qw/apple bread curry donut Ã©clair/);
+</code></pre></p>
+
+<hr>
+
+<p><b>Algorithm::Combinatorics</b>.  This is probably what you're looking for.  It has nearly everything you need and is pretty fast.  Recommended.  If you need the highest speed, Algorithm::FastPermute and ntheory are faster.</p>
+
+<p><pre><code class="prettyprint">        use Algorithm::Combinatorics qw/combinations permutations/;
+
+<p>        my $citer = combinations(\@data, 3);<br />
+        while (my $c = $citer-&gt;next) { say "@$c"; }</p>
+
+<p>        my $piter = permutations(\@data);<br />
+        while (my $p = $piter-&gt;next) { say "@$p"; }<br />
+</code></pre></p></p>
+
+<p><b>ntheory</b>.  XS and Perl block calls for permutations and combinations.  Note that the source array isn't directly used -- each block invocation is given an array of indices rather than a direct permutation/combination of the source array.</p>
+
+<p><pre><code class="prettyprint">        use ntheory qw/forcomb forperm/;
+
+<p>        forcomb { say "@data[@_]" } scalar(@data),3;</p>
+
+<p>        forperm { say "@data[@_]" } scalar(@data);<br />
+</code></pre></p></p>
+
+<p><b>Math::Combinatorics</b>.  One of the slowest of the modules tested, but it does combinations, permutations, and derangements all without XS.</p>
+
+<p><pre><code class="prettyprint">        use Math::Combinatorics;
+        my $comb = Math::Combinatorics-&gt;new(count =&gt; 3, data =&gt; [@data]);
+
+<p>        while (my @c = $comb-&gt;next_combination) { say "@c" }</p>
+
+<p>        while (my @p = $comb-&gt;next_permutation) { say "@p" }<br />
+</code></pre></p></p>
+
+<p><b>Algorithm::FastPermute</b>.  The fastest permutation generator -- for large arrays it is about 10x faster than ntheory, 50x faster than Algorithm::Permute, 60-500x faster than the other modules.  Modifies the source array, but after a full permutation it will be in the original order.</p>
+
+<p><pre><code class="prettyprint">        use Algorithm::FastPermute qw/permute/;
+        permute { say "@data" } @data;
+</code></pre></p>
+
+<p><b>Algorithm::Permute</b>.  Decent permutation iterator.  Also includes the FastPermute block generator that works just like that example.</p>
+
+<p><pre><code class="prettyprint">        use Algorithm::Permute;
+        my $perm = Algorithm::Permute-&gt;new(\@data);
+        while (my @set = $perm-&gt;next) { say "@set" }
+</code></pre></p>
+
+<p><b>Algorithm::Loops</b>.  Permutations through an iterator that modifies the source array.  Combinations possible <a href="http://www.perlmonks.org/?node_id=371228">with some code</a>.  The array <u>must</u> be sorted to work correctly, and if using sorted numbers, you must use NextPermuteNum.</p>
+
+<p><pre><code class="prettyprint">        use Algorithm::Loops qw/NextPermute/;
+        do { say "@data" } while NextPermute(@data);
+</code></pre></p>
+
+<p><b>List::Permutor</b>.  Yet another permutation iterator.</p>
+
+<p><pre><code class="prettyprint">        use List::Permutor;
+        my $perm = List::Permutor-&gt;new(@data);
+        while (my @set = $perm-&gt;next) { say "@set" }
+</code></pre></p>
+
+<p><b>Iterator::Misc</b>.  Yet another permutation iterator, also includes various other iteration functions.</p>
+
+<p><pre><code class="prettyprint">        use Iterator::Misc;
+        my $iter = ipermute(@data);
+        while (!$iter-&gt;is_exhausted) { say "@{$iter-&gt;value}" }
+</code></pre></p>
+
+<p><b>Math::Permute::Array</b>.  Yet another permutation iterator.  Has a rather different syntax than most other modules.  Also has a block call.  Also allows direct access to permutation index, though without defined order.</p>
+
+<p><pre><code class="prettyprint">        use Math::Permute::Array;
+        my $perm = Math::Permute::Array-&gt;new(\@data);
+        say "@{$perm-&gt;cur()}";
+        for (1 .. $perm-&gt;cardinal()-1) { say "@{$perm-&gt;next()}" }
+</code></pre></p>
+
+<p><b>Math::Permute::List</b>.  A block permutation generator.  Permission issue recently fixed, so it installs correctly now.</p>
+
+<p><pre><code class="prettyprint">        use Math::Permute::List;
+        permute { say "@_" } @data;
+</code></pre></p>
+
+<p><b>Math::GSL::Permutation</b>.  Uses the <a href="https://www.gnu.org/software/gsl/manual/html_node/Permutations.html">GSL permutation API</a>, which is function based, with a few (incomplete) helper methods.  Not recommended for this task unless you're already using GSL.  Uses a different API than Combination.  Permutes reasonably fast, but no quick way to retrieve the array of permutations (calling <tt>as_list</tt> takes 95% of the time).  Also note we have to use private class data.</p>
+
+<p><pre><code class="prettyprint">        use Math::GSL::Permutation qw/:all/;
+        my $p = Math::GSL::Permutation-&gt;new(scalar(@data));
+        do {
+          say "@data[$p-&gt;as_list]";
+        } while !gsl_permutation_next($p-&gt;{_permutation});
+</code></pre></p>
+
+<p><b>Math::Disarrange::List</b>.  A block derangement generator.  Permission issue recently fixed, so it installs correctly now.</p>
+
+<p><pre><code class="prettyprint">        use Math::Disarrange::List;
+        disarrange { say "@_" } @data;
+</code></pre></p>
+
+<p><!--<br />
+<p><b>Math::Combinations</b>.  A new module.  Pushes all combinations into a formatted string so inflexible and can use too much memory.</p></p>
+
+<p><pre><code class="prettyprint">        use Math::Combinations;
+        say combinations_without_repetition(\@data, 3);
+</code></pre></p>
+-->
+
+<p><b>Math::GSL::Combination</b>.  Documentation a bit incomplete.  Not recommended for this task unless you're already using GSL.  Inconsistent API with Permutation.</p>
+
+<p><pre><code class="prettyprint">        use Math::GSL::Combination qw/:all/;
+        my $c = Math::GSL::Combination-&gt;new(scalar(@data),3);
+        do {
+          say "@data[$c-&gt;as_list]";
+          $c-&gt;next()
+        } while !$c-&gt;status();
+</code></pre></p>
+                        </div><!-- .entry-body -->
+                        
+                        <div class="entry-meta-2 pkg">
+                            <ul>
+                                <li><a href="#comments">1 comment</a></li>
+                                <!-- <li><a href="http://blogs.perl.org/users/dana_jacobsen/2015/02/short-survey-of-modules-for-combinations-and-permutations.html">0 votes</a></li> -->
+                            </ul>
+                        </div>
+                    </div><!-- #entry-6704 -->
+                    
+
+
+
+
+	<div class="entry-tags">
+    <h4>Tagged as<span class="delimiter">:</span></h4>
+    <span><a href=
+"javascript:void(0)" onclick="location.href='http://blogs.perl.org/mt/mt-search.fcgi?blog_id=935&amp;tag=math%20combinations%20permutations%20combinatorics&amp;limit=20';return false;" rel="tag">math combinations permutations combinatorics</a></span>
+     </div>
+
+
+<div id="comments" class="comments">
+
+
+    
+    
+        
+    <h2 class="comments-header">1 Comment</h2>
+    
+    <div id="comments-content" class="comments-content" style="clear: left;">
+        
+        <div id="comment-1544648" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <a class="commenter-profile" href="http://savage.net.au/"><img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+                    <span class="vcard author"><a title="http://savage.net.au/" href="http://savage.net.au/">Ron Savage</a></span>
+
+                    | <a href="http://blogs.perl.org/users/dana_jacobsen/2015/02/short-survey-of-modules-for-combinations-and-permutations.html#comment-1544648"><abbr class="published" title="2015-02-14T22:05:16+00:00">February 14, 2015 10:05 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1544648, 'Ron Savage')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Hi Dana</p>
+
+<p>Nice work. I've added it to<br />
+<a href="http://savage.net.au/Module-reviews.html">http://savage.net.au/Module-reviews.html</a><br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    </div>
+        
+    
+    
+
+    
+    
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header">Leave a comment</h2>
+        <div class="comments-open-content">
+
+        
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="http://blogs.perl.org/mt/mt-comments.fcgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="6704" />
+                <input type="hidden" name="__lang" value="en" />
+                <input type="hidden" name="parent_id" value="" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+                    <div id="comment-form-name">
+                        <label for="comment-author">Name</label>
+                        <input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-email">
+                        <label for="comment-email">Email Address</label>
+                        <input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-url">
+                        <label for="comment-url">URL</label>
+                        <input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
+                        <label for="comment-bake-cookie">Remember personal info?</label>
+                    </div>
+                </div>
+                <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-text">
+                    <label for="comment-text">Comments
+                    (You may use HTML tags for style)</label>
+                    <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+                    <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" />
+                    <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+    mtAttachEvent("load", mtEntryOnLoad);
+    mtAttachEvent("unload", mtEntryOnUnload);
+    //-->
+    </script>
+    
+
+
+</div>
+
+
+
+</div><!-- #content-main -->
+            
+            <div id="content-aux">
+            
+                
+                <div class="module-aux pkg" id="module-aux-about-author-1362">
+                <div class="module-inner">
+                    <h3>About Dana Jacobsen</h3>
+                    <p><img class="authorpic" src="http://blogs.perl.org/mt/mt-static/images/default-userpic-50.jpg" alt="user-pic" />
+	            I've been using Perl since 1991 (4.010 or so).  At some point I realized that while I have used many languages, I enjoy using Perl more than any others.</p>
+                    <div class="more-link"><a href="http://blogs.perl.org/mt/mt-cp.fcgi?__mode=view&amp;id=1362">More info &raquo;</a></div>
+                </div>
+                </div><!-- #module-aux-about-author -->
+
+
+
+
+                
+            
+            
+            <div class="module-aux pkg" id="module-aux-search">
+                <div class="module-inner">
+                    
+                    
+                    <h3>Search this blog</h3>
+                    
+                    
+					
+                    <div id="search-form-aux">
+                        <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    
+                            <input type="hidden" name="IncludeBlogs" value="935" />
+                    
+                            <input type="hidden" name="limit" value="20" />
+                            <label for="search">Search</label>
+                            <input id="local-search" class="query" name="search" value="" />
+                            <input class="submit" type="submit" value="Go" />
+                        </form>
+                    </div><!-- #search-form-aux -->
+                </div>
+                </div><!-- #module-aux-search -->
+                    
+
+            
+            
+                
+                
+                
+                
+            
+
+            </div><!-- #content-aux -->
+
+
+
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+
+        <div id="footer">
+        <div id="footer-inner" class="pkg">
+            <ul>
+                <li class="first"><a href="http://github.com/blogs-perl-org/blogs.perl.org/issues">Feedback welcome</a></li>
+                <li>Hosted by <a href="http://dave.org.uk">Dave Cross</a> of <a href="http://mag-sol.com/">Magnum Solutions</a> and <a href="http://aaroncrane.co.uk/">Aaron Crane</a> of <a href="http://cutbot.net/">Cutbot</a></li>
+            </ul>
+            <ul>
+                <li class="first">Free blog hosting for users of the <a href="http://perl.org">Perl Programming Language</a></li>
+            </ul> 
+
+            <div class="powered-by"><a href="http://www.movabletype.com/" target="_blank">Powered by Movable Type</a></div>
+        </div><!-- #footer-inner -->
+        </div><!-- #footer -->
+            
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+        
+    </div><!-- #container-inner -->
+    </div><!-- #container -->
+
+    
+
+</body>
+</html>
+
+
+
+
+

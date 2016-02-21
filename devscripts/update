@@ -1,0 +1,99 @@
+#!/usr/bin/env perl
+
+use 5.010;
+use strict;
+use warnings;
+use FindBin '$Bin';
+
+use App::CreateAcmeCPANListsImportModules;
+use Perinci::Sub::Util qw(gen_curried_sub);
+use Perinci::CmdLine::Any;
+
+gen_curried_sub(
+    'App::CreateAcmeCPANListsImportModules::create_acme_cpanlists_import_modules',
+    {
+        modules => [
+            {
+                name => 'RomanNumbers',
+                url => 'http://datetime.mongueurs.net/divers/nombres-romains/Roman_Numbers.html',
+                extract_opts => {from_text=>1},
+                summary => 'Roman Numbers (2009)',
+            },
+            {
+                name => 'CombinationsAndPermutations',
+                url => 'http://blogs.perl.org/users/dana_jacobsen/2015/02/short-survey-of-modules-for-combinations-and-permutations.html',
+                extract_opts => {from_text=>1},
+                summary => 'Short survey of modules for combinations and permutations (2015)',
+            },
+            {
+                name => 'DatesPart1',
+                url => 'http://blogs.perl.org/users/buddy_burden/2015/09/a-date-with-cpan-part-1-state-of-the-union.html',
+                extract_opts => {from_text=>1},
+                summary => 'CPAN modules for processing dates - Part 1 (2015)',
+            },
+            {
+                name => 'DatesPart2',
+                url => 'http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html',
+                extract_opts => {from_text=>1},
+                summary => 'CPAN modules for processing dates - Part 2',
+            },
+            {
+                name => 'SpellChecking',
+                url => 'http://blogs.perl.org/users/kirk_kimmel/2012/08/an-overview-of-spell-checking-modules.html',
+                extract_opts => {from_text=>1},
+                summary => 'An overview of spell checking modules (2012)',
+            },
+            {
+                name => 'ThreadPoolForBossWorkerModel',
+                url => 'http://blogs.perl.org/users/kal/2012/09/thread-pool-for-a-bossworker-model.html',
+                extract_opts => {from_text=>1},
+                summary => 'Thread pool for a boss/worker model (2012)',
+            },
+            {
+                name => 'Caching',
+                url => 'http://cpan.robm.fastmail.fm/cache_perf.html',
+                extract_opts => {from_text=>1},
+                summary => 'Comparison of different Perl caching modules (2002-2005)',
+            },
+            {
+                name => 'ORM',
+                url => 'http://www.perlmonks.org/?node_id=700283',
+                extract_opts => {from_text=>1},
+                summary => 'Perl ORM comparison (Class::DBI vs DBIx::Class vs Rose::DB::Object) (2008)',
+            },
+            {
+                name => 'TemplateRoundup',
+                url => 'http://www.illusori.co.uk/projects/Template-Roundup/',
+                extract_opts => {from_text=>1},
+                summary => 'Perl Template Roundup (2010)',
+            },
+            {
+                name => 'JSONDecoders',
+                url => 'http://perlmaven.com/comparing-the-speed-of-json-decoders',
+                extract_opts => {from_text=>1},
+                summary => 'Comparing the speed of JSON decoders (2015)',
+            },
+            {
+                name => 'TemplatingSystem',
+                url => 'https://perl.apache.org/docs/tutorials/tmpl/comparison/comparison.html',
+                extract_opts => {from_text=>1},
+                summary => 'Choosing a templating system (2014)',
+            },
+            #{
+            #    name => '',
+            #    url => '',
+            #    extract_opts => {from_text=>1},
+            #    summary => '',
+            #},
+        ],
+        namespace => 'Acme::CPANLists::Import',
+        user_agent => 'Mozilla/5.0',
+        dist_dir => "$Bin/..",
+    },
+    'app',
+);
+
+Perinci::CmdLine::Any->new(
+    url => '/main/app',
+    log => 1,
+)->run;

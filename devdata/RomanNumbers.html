@@ -1,0 +1,1364 @@
+<html>
+<head>
+<title>Roman Numbers</title>
+</head>
+<body>
+<a href='../../index.html'>Main page</a>
+<hr />
+<h1>Roman Numbers</h1>
+
+<h2>Foreword</h2>
+
+<p>
+This is the translation of a talk given in French
+during the French Perl Workshop in 2009.
+There are a few differences with the original talk. Since I have no
+time limit for this HTML file, there are
+a few points which were skipped during the talk.
+And also, a few points I did not dig enough
+before the conference and which I fixed
+later.
+</p>
+
+<h2>Sources</h2>
+
+<img src="livres.jpeg" alt="Picture of book covers" align='right' />
+
+<p align='right'><font size="2">
+Source: personal picture
+</font></p>
+
+<p>
+Karl Menninger, <cite lang='en'>Number Words and Number Symbols, A Cultural History of Numbers</cite>, Dover Publications, translation of <cite lang='de'>Zahlwort und Ziffer: Eine Kulturgeschicht der Zahlen</cite>, 1957.
+</p>
+<p>
+Geneviève Guitel, <cite>Histoire comparée des numérations écrites</cite>, Flammarion publisher, 1975.
+</p>
+Georges Ifrah, <cite>Histoire universelle des chiffres</cite>, Seghers, 1981, an English translation exists.
+</p>
+
+<p>
+Plus <a href='http://www.wikipedia.org/'>Wikipedia</a>, but only for
+some pictures, not for the articles.
+</p>
+
+<p>
+Let us note that Karl Menninger is a linguist, which is why
+he is interested in spoken as well as written numbers.
+Geneviève Guitel and Georges Ifrah are mathematicians
+and are therefore mostly interested in written numbers.
+In the following text, I quote these three books by the initials
+of the author and the page number. If you have a different edition
+(the English translation of Georges Ifrah's book, for example),
+well, too bad for you, you will have to guess!
+</p>
+
+<h2>CPAN, <tt>Roman.pm</tt></h2>
+
+The fist Perl module dealing with roman numbers is simply named
+<a href='http://search.cpan.org/dist/Roman/'><tt>Roman</tt></a>.
+It was originally written by Ozawa Sakuro who maintained it from
+1995 to 1997. Since 2007, it is maintained by
+<a href='http://search.cpan.org/~chorny/'>Alexandr Ciornii</a>,
+although
+<a href='http://search.cpan.org/~mirod'>Michel Rodriguez</a> 
+has volunteered to maintain it a few years earlier, but
+without obtaining co-maintenance status.
+The current version is 1.23. Example:
+<pre>
+use Roman;
+
+for my $ar (qw/1 5 8 40 84/) {
+  my $rm = Roman($ar);
+  print "$ar -&gt; $rm\n";
+}
+
+for my $rm (qw/I IV VII XIV LII LXXXIV/) {
+  my $ar = arabic($rm);
+  print "$rm -&gt; $ar\n";
+}
+
+</pre>
+
+<h2>CPAN, <tt>Math::Roman</tt></h2>
+
+There is also <a href='http://search.cpan.org/dist/Math-Roman/'><tt>Math::Roman</tt></a>
+by <a href='http://search.cpan.org/~tels/'>Tels</a>.
+The current version is 1.07.
+Example:
+<pre>
+use Math::Roman;
+
+for (qw/1 5 8 40 84 I IV VII XIV LII LXXXIV/) {
+  my $roman = Math::Roman-&gt;new($_);
+  my $arab  = $roman-&gt;as_number;
+  print "$arab -&gt; $roman\n";
+}
+</pre>
+
+<p>This module allows you to redefine the characters used for
+roman numbers. Here is an example from the module's POD,
+where 25 is written "AAB", with "A" for 10 and "B" for 5:
+</p>
+<pre>
+Math::Roman::tokens ( qw(A 10 B 5) );
+$r = Math::Roman::roman('AAB');
+print "'$r' is ",$r-&gt;as_number(),"\n";
+</pre>
+
+<p>In the following, I will differentiate between
+the "basic" variant and the "advanced" variant.
+The basic variant does not use the <tt>tokens</tt>
+function, while the advanced variant uses it.
+</p>
+
+<h2>CPAN, <tt>Text::Roman</tt></h2>
+
+The third module is <a href='http://search.cpan.org/dist/Text-Roman/'><tt>Text::Roman</tt></a>
+by Peter de Padua Krauss, yet it appears in
+
+<a href='http://search.cpan.org/~syp/'>Stanislas Pusep</a>'s
+directory. The current version is 3.01.
+Example:
+<pre>
+use Text::Roman;
+
+for my $ar (qw/1 5 8 40 84/) {
+  my $rm = roman($av);
+  print "$ar -&gt; $rm\n";
+}
+
+for my $rm (qw/I IV VII XIV LII LXXXIV xiv lii lxxxiv /) {
+  my $ar = roman2int($rm);
+  print "$rm -&gt; $ar\n";
+}
+</pre>
+
+<p>
+I nearly missed this module, because I equated "Roman" to
+"Latin" and the association between "Text" and "Roman/Latin"
+makes me think of the ISO-8859-1 encoding.
+</p>
+
+<h2>CPAN, <tt>Convert::Number::Roman</tt></h2>
+
+The fourth module is
+<a href='http://search.cpan.org/dist/Convert-Number-Roman/'><tt>Convert::Number::Roman</tt></a>
+by <a href='http://search.cpan.org/~dyacob/'>Daniel Yacob</a>.
+The current version is 0.01.
+Example:
+<pre>
+use Convert::Number::Roman;
+use utf8;
+
+for my $av (1, 5, 8, 40, 84, 
+	    "&#8544;", "&#8553;", "&#8556;&#8546;", "&#8553&#8557;",
+            ) {
+  my $cnr = Convert::Number::Roman-&gt;new($av);
+  my $ap = $cnr-&gt;convert;
+  print "$av -&gt; $ap\n";
+}
+
+</pre>
+
+<h2>CPAN, <tt>Roman::Unicode</tt></h2>
+
+<p>At last a module which is compatible with the theme of
+<a href="http://yapceurope.lv/ye2011/">YAPC::Europe 2011</a>,
+"Modern Perl". Not only this is a recent module
+(first released in July 2011), but it is also a modern
+module, which requires Perl 5.14.0.</p>
+<pre>
+use utf8;
+use feature ':5.14';
+use Roman::Unicode qw/to_roman is_roman to_perl/;
+
+for (qw/1 3 26 84 1234 4321 12345 64321 222333/) {
+  my $r = to_roman($_);
+  say $_, ' ', $r;
+}
+
+for (qw/&#8544; &#8544;&#8544;&#8544; &#8553;&#8553;&#8548;&#8544; &#8556;&#8553;&#8553;&#8553;&#8544;&#8548;/) {
+  if (is_roman($_)) {
+    my $n = to_perl($_);
+    say $_, ' ', $n;
+  }
+  else {
+    say "$_ invalid roman number";
+  }
+}
+</pre>
+
+<h2>CPAN, <tt>Acme::Roman</tt></h2>
+
+Less serious, as the <tt>Acme</tt> prefix shows, here is
+<a href='http://search.cpan.org/dist/Acme-Roman/'><tt>Acme::Roman</tt></a>
+by <a href='http://search.cpan.org/~ferreira/'>Adriano Ferreira</a>.
+The current version is 0.0.2.12.
+Example
+<pre>
+use Acme::Roman;
+
+my $a = LXX;
+my $b = XIV;
+print $a + $b, "\n";
+
+</pre>
+
+<p>
+This module requires <tt>Roman.pm</tt> and adds some
+<tt>AUTOLOAD</tt> magic, therefore the limits of
+<tt>Roman.pm</tt> described below apply also to
+<tt>Acme::Roman</tt>.
+</p>
+
+<h2>CPAN, <tt>Lingua::Romana::Perligata</tt></h2>
+
+<p>
+Even without an <tt>Acme</tt> prefix,
+<a href='http://search.cpan.org/dist/Lingua-Romana-Perligata/'><tt>Lingua::Romana::Perligata</tt></a>
+is another module "for fun", written by
+<a href='http://search.cpan.org/~dconway/'>Damian Conway</a>.
+The current version is 0.50. Example:
+</p>
+
+<pre>
+use Lingua::Romana::Perligata;
+
+cumula meis listis III tum IV tum XC tum LX.
+
+per quisque nombrum in listis fac sic 
+  nombrum            tum novumversum egresso scribe.
+  nombrum comementum tum novumversum egresso scribe.
+cis
+</pre>
+
+<p>
+Translation:
+</p>
+
+<pre>
+use Roman;
+
+push my @list, 3, 4, 90, 60;
+
+foreach $nombr (@list) {
+  print STDOUT $nombr, "\n";
+  print STDOUT Roman::Roman($nombr), "\n";
+}
+</pre>
+
+<p>
+(<i lang='la'>comementum</i> does not mean that you call the
+<tt>Roman</tt> module and the homonymous function, but
+that you want to print the value in roman numbers rather
+than arabic. I have translated this with a call to
+<tt>Roman</tt> because the result is the same).
+Another example written by Robin Berjon for a 
+<a href='http://paris.mongueurs.net/aplusplus.html'>web page that might interest you</a>:
+</p>
+
+<pre>
+use Lingua::Romana::Perligata;
+ao postincresce.
+</pre>
+
+<h2><tt>perl.plover.com</tt></h2>
+
+<p>
+Mark-Jason Dominus gives you an
+<a href='http://perl.plover.com/#Roman'>original proposition for roman numbers</a>.
+Unlike Adriano Ferreira who used <tt>AUTOLOAD</tt>, M-J D 
+used <tt>tie</tt> for his achievements.
+</p>
+
+<pre>
+use Roman;
+
+print "IX + IX = ", $IX + $IX, "\n";
+
+print "XI * IV = ", $XI * $IV, "\n";
+
+print "II ** X = ", $II ** $X, "\n";
+
+print "M - I = ", $M-$I, "\n";
+
+print "Powers of II:\n";
+for ($p = $I; $p < $CLVI; $p *= $II) {
+  print "\t", $p, "\n";
+}
+</pre>
+
+<p>
+I did not install it on my computer.
+</p>
+
+<h2>CPAN, others</h2>
+
+<p>
+I did not try
+<a href='http://search.cpan.org/~book/Acme-MetaSyntactic-0.99/lib/Acme/MetaSyntactic/roman.pm'><tt>Acme::MetaSyntactic::roman</tt></a>
+by <a href='http://search.cpan.org/~ambs/'>Alberto Manuel Brandão Simões</a>
+and <a href='http://search.cpan.org/~book/'>BooK</a>,
+because it does not aim at converting numbers
+from roman numerals to arabic numerals or the other way.
+I did not try either 
+<a href='http://search.cpan.org/~jquelin/Language-Befunge-4.13/lib/Language/Befunge/lib/ROMA.pm'><tt>Language::Befunge::lib::ROMA</tt></a>
+by <a href='http://search.cpan.org/~jquelin/'>Jérôme Quelin</a>.
+</p>
+
+<p>
+And there are certainly other places where you can find other
+examples of roman number conversions.
+</p>
+
+<h2>The Rules of the Roman Numbers System</h2>
+
+<table>
+<tr><td>Roman numbers use the letters M, D, C, L, X, V and I.</td></tr>
+<tr><td>You never have 4 times in a row the same symbol (exception: IIII on clockfaces).</td></tr>
+<tr><td>Subtraction is performed by writing an I on the left of a V or X but not L, C, D or M , writing an X on the left
+of an L or C but neither D nor M or writing a C on the left of a D or M.</td></tr>
+<tr><td>In a given subtraction, no more than one numeral among I, X and C can be subtracted.</td></tr>
+<tr><td>The Roman number system is purely additive and subtractive.</td></tr>
+<tr><td>You cannot go beyond 3999.</td></tr>
+</table>
+
+
+<h2>The Rules of the Roman Numbers System</h2>
+
+<table>
+<tr><td>Roman numbers use the letters M, D, C, L, X, V and I.</td>
+    <td style='color:red'>WRONG!</td></tr>
+<tr><td>You never have 4 times in a row the same symbol (exception: IIII on clockfaces).</td>
+    <td style='color:red'>WRONG!</td></tr>
+<tr><td>Subtraction is performed by writing an I on the left of a V or X but not L, C, D or M , writing an X on the left
+    of an L or C but neither D nor M or writing a C on the left of a D or M.</td>
+    <td style='color:red'>WRONG!</td></tr>
+<tr><td>In a given subtraction, no more than one numeral among I, X and C can be subtracted.</td>
+    <td style='color:red'>WRONG!</td></tr>
+<tr><td>The Roman number system is purely additive and subtractive.</td>
+    <td style='color:red'>WRONG!</td></tr>
+<tr><td>You cannot go beyond 3999.</td>
+    <td style='color:red'>WRONG!</td></tr>
+</table>
+
+<p>
+I must amend the statements given above. The rules
+presented and then considered as wrong are the rules
+of a simplified (dumbed down) Roman numeral system used since
+the XXth century. But during the period before,
+until the XIXth century, examples contradicting these
+rules are abundant.
+If you have to use Roman numerals in a corporate context
+(e.g. for the generation of web pages), use this simplified number
+system. On the other hand, if you want to optimize the fun factor,
+read the following.
+</p>
+
+<h2>Based on the letters M D C L X V and I?</h2>
+
+<img src="Polla_via_popilia_da_reggio_a_capua.jpg" align='right' alt="Inscription on Via Popilia" />
+
+<p align='right'><font size="2">
+Source:
+<a href='http://fr.wikipedia.org/wiki/Fichier:Polla_via_popilia_da_reggio_a_capua.jpg'>Wikipedia</a>,
+picture in the public domain.
+You can also see it in KM244, GG201 and GI142.
+</font></p>
+
+<p>
+In ancient carvings, you find other glyphs for L 
+(via Popilia) and for D, different from the glyphs we are
+used to see. The hypothesis proposed by KM 242 and GI 144 
+is that these symbols come from carving notches on sticks,
+as is practised by shepherds. Later, the characters deriving
+from these notches were assimilated to letters.
+</p>
+
+<p>
+Acccording to KM 243, the symbol for 50 is derived
+from the primitive symbol for 100, cut in half.
+Then this symbol gradually evolved into the well-known "L".
+</p>
+
+<img src="50.png" alt="Evolution of the L for 50" width="50%" />
+
+<p><font size="2">
+Source: personal drawing, based on KM 243 and GI 158.
+</font></p>
+
+<p>
+KM 243 mentions an hypothesis from Mommsen, but without 
+adding faith to it. The Etruscan alphabet (which became the
+Roman alphabet later) is derived from the Greek alphabet,
+but some letters such as &#936; and &#920;  were
+left aside. Mommsen believes that the Etruscans adopted
+these two letters to use them as numerals. GG 204 
+mentions a similar hypothesis from 
+J. Marouzeau without adding faith either.
+</p>
+
+<img src='columna-rostrata.jpg' alt="Duilius' Columna Rostrata" />
+<img src='Descartes_Discours_de_la_Methode.jpg' alt='Frontispice of Discours de la Méthode' />
+<img src='Spinoza_Tractatus_Theologico-Politicus.jpg' alt='Frontispice of traité théologico-politique' />
+<img src='Spinoza_Opera_Posthuma.jpg' alt="Frontispice of Spinoza's posthumous works" />
+
+<p><font size="2">
+The inscription on Columna Rostrata was carved in 260 B.C.
+It is therefore in the public domain. 
+You can also see it in KM44, GG214 and GI340.
+Likewise, Descartes and Spinoza, although much younger
+than Duilius, lived in the XVIIth century, so
+their books are too in the public domain.
+Sources:
+<a href='http://glossographia.wordpress.com/2008/10/27/doorworks-2-columna-rostrata/'>Glossographia</a>
+by Stephen Chrisomalis for the Columna Rostrata and
+<a href='http://commons.wikimedia.org/wiki/Category:Baruch_Spinoza'>Commons</a> 
+<a href='http://commons.wikimedia.org/wiki/Category:Ren%C3%A9_Descartes'>Wikimedia</a>
+for the frontispices.
+</font></p>
+
+<p>
+For 1000, the ancient symbol is "(|)" (or
+"&#8576;", or "&#8557;&#8544;&#8579;") and for
+D, this is "|)" (or "&#8544;&#8579;"), which can be seen
+on Duilius' Columna Rostrata and which has lived on for
+centuries, since it appears on frontispices of
+Descartes' and Spinoza's books. Another glyph exists, similar
+to a "bow-tie" &#8734; which,
+according to KM 245, was picked up by Wallis to designate infinity.
+</p>
+
+<p>
+This may be the reason the Unicode Consortium decided to attribute 
+<a href='http://www.unicode.org/charts/PDF/U2150.pdf'>specific codepoints to Roman numerals</a>, 
+instead of the U+0041 to U+005A (65 to 90) code points of the Latin alphabet.
+</p>
+
+<table border='1'>
+<tr align='center'><td>2160</td><td>&#8544;</td><td>2168</td><td>&#8552;</td><td>2170</td><td>&#8560;</td><td>2178</td><td>&#8568;</td><td>2180</td><td>&#8576;</td></tr>
+<tr align='center'><td>2161</td><td>&#8545;</td><td>2169</td><td>&#8553;</td><td>2171</td><td>&#8561;</td><td>2179</td><td>&#8569;</td><td>2181</td><td>&#8577;</td></tr>
+<tr align='center'><td>2162</td><td>&#8546;</td><td>216A</td><td>&#8554;</td><td>2172</td><td>&#8562;</td><td>217A</td><td>&#8570;</td><td>2182</td><td>&#8578;</td></tr>
+<tr align='center'><td>2163</td><td>&#8547;</td><td>216B</td><td>&#8555;</td><td>2173</td><td>&#8563;</td><td>217B</td><td>&#8571;</td><td>2187</td><td><img src='U2187.png' height='50%' /></td></tr>
+<tr align='center'><td>2164</td><td>&#8548;</td><td>216C</td><td>&#8556;</td><td>2174</td><td>&#8564;</td><td>217C</td><td>&#8572;</td><td>2188</td><td><img src='U2188.png' height='50%' /></td></tr>
+<tr align='center'><td>2165</td><td>&#8549;</td><td>216D</td><td>&#8557;</td><td>2175</td><td>&#8565;</td><td>217D</td><td>&#8573;</td><td>2183</td><td>&#8579;</td></tr>
+<tr align='center'><td>2166</td><td>&#8550;</td><td>216E</td><td>&#8558;</td><td>2176</td><td>&#8566;</td><td>217E</td><td>&#8574;</td><td>2184</td><td>&#8580;</td></tr>
+<tr align='center'><td>2167</td><td>&#8551;</td><td>216F</td><td>&#8559;</td><td>2177</td><td>&#8567;</td><td>216F</td><td>&#8575;</td><td>2186</td><td><img src='U2186.png' height='30' /></td></tr>
+</table>
+<p>
+There are a few problems. Why did they need to declare II, III
+IV, VI, VII, VIII, IX, XI and XII in addition to I, V and X? 
+Why did they stop at 12?
+(A likely hypothesis is that they defined all these twelve codepoints to allow
+the drawing of clockfaces with Unicode chars.
+Another likely hypothesis is that the Unicode Consortium attempts to
+reach a kind of ascending compatibility by defining characters which
+have been in use at some point in older computers and that the
+composite Roman Numerals come from such an old computer system.)
+What will VII, VIII and XII look like in a monospaced font?
+</p>
+<pre>
+7 = &#8550;, 8 = &#8551;, 12 = &#8555;
+</pre>
+<p>
+Why did they use the same code point for C for 100 
+and for C as the first element of "&#8557;&#8544;&#8579;"? 
+Why did they use the same code point for I for 1 
+and for I as the middle part of "&#8557;&#8544;&#8579;"? 
+</p>
+<p>
+There is yet a limited use for these characters. If you have a long
+Twitter message (142 chars or so), and if your message is about Vivien Leigh,
+Asterix, Obelix or Liv Ullmann, you can spare one character by typing
+&#8549;&#8565;en Leigh, Aster&#8568;, Obel&#8568; and L&#8563; Ullmann.
+</p>
+<p>
+And sorry about U+2186, U+2187 and U+2188, they come from a recent version
+of the Unicode standard, more recent than the fonts in use on
+my PC, so I had to use screen hard-copies.
+</p>
+
+<h3>Perl</h3>
+<p>
+<tt>Roman</tt>, <tt>Math::Roman</tt> basic variant 
+and <tt>Text::Roman</tt> do not support Unicode.
+</p>
+<p>
+<tt>Convert::Number::Roman</tt> supports <em>only</em> Unicode, 
+but it does not undestand "(|)", either in the form "\x{2180}" ("&#8576;")
+or in the form  "\x{216D}\x{2160}\x{2183}" ("&#8557;&#8544;&#8579;").
+Actually, <tt>Convert::Number::Roman</tt> is a faithful implementation of
+<a href='http://www.w3.org/TR/css3-lists/'>http://www.w3.org/TR/css3-lists/</a> 
+which requires the use of the range
+U+2160 -&gt; U+2183
+but ignores U+0043 ("C"), U+0044 ("D") etc.
+Also, for 1000, this specification mentions only
+U+216F ("M") but neither U+2180 ("&#8576") 
+nor the combination U+216D,U+2160,U+2183 ("&#8557;&#8544;&#8579;").
+</p>
+<p>
+<tt>Roman::Unicode</tt> understands the Unicode chars, 
+while taking in account only the following chars:
+U+2160 "I", U+2164 "V", U+2169 "X"
+U+2174 "L", U+2175 "C", U+2176 "D",
+U+2177 "M", U+2181 "|))", U+2182 "((|))",
+U+2187 "|)))" et U+2188 "(((|)))".
+It does not use the composite chars, and I am glad
+of it.
+In addition, the module allows you to 
+use the ASCII chars, between U+0020 and U+007E.
+</p>
+<p>
+Contrary to what I said during the 2009 talk, <tt>Math::Roman</tt>
+advanced variant (that is, using <tt>tokens()</tt>)
+supports Unicode. Depending on whether you want to use the range from
+U+2161 (&#8545;) to U+2168 (&#8552;) or not, the number
+of parameters transmitted to  <tt>tokens()</tt> will be big
+or small. And if you want to recognise 
+U+216A (&#8554;) and U+216B (&#8555;) as well, it turns huge.
+But Tels (the author of this module) is not the one I blame for
+this inconvenience. 
+<a href='ex-mr-ut.en.html' name='ex-mr-ut'>Here is a script</a> 
+to illustrate the use of Unicode with <tt>Math::Roman</tt>.
+
+</p>
+<h2>Based on the letters M D C L X V and I? (continued)</h2>
+
+<p>
+When lower case letters appeared, during the Middle Ages,
+they were also used for Roman numerals. In some cases,
+for aesthetic reasons or to prevent crookery, a final
+"i" was turned into a "j". The Unicode Consortium did not
+opt to create a separate codepoint for the numeral "j",
+maybe they considered it is a glyph variant of the same
+character (remember that Unicode does not want to
+deal with glyphs; see for example the initial, median,
+final and isolated glyphs of arabic letters).
+</p>
+
+<p>
+The Romans used the "S" letter for the fraction 1/2, the only
+fraction they were used to. You may note that a 
+sesterce is worth 2.5 as. Therefore, the abbreviation HS
+for sesterce really commes from "IIS" (with an horizontal stroke).
+And the etymology of the word is "nearly three", that is,
+"3 minus 0.5". KM 160-285 notes also a I with a small
+oblique stroke for 0.5, a V with a small oblique stroke for 4.5
+and an X with a small oblique stroke for 9.5. The Unicode
+Consortium did not think necessary to create codepoints
+for the "S" numeral or for the "I", "V" and "X" with a stroke.
+</p>
+
+<h3>Perl</h3>
+<p>
+None of the five "serious" modules accepts the "S" numeral.
+<tt>Roman</tt>, <tt>Text::Roman</tt> and <tt>Convert::Number::Roman</tt> 
+accept lower case letters (U+2170 to U+217F for <tt>Convert::Number::Roman</tt>) 
+but not <tt>Math::Roman</tt> (basic). <tt>Roman</tt>, <tt>Roman::Unicode</tt>, <tt>Math::Roman</tt> and 
+<tt>Text::Roman</tt> reject the "j" numeral variant. For
+<tt>Convert::Number::Roman</tt>, as I already said for Unicode,
+this can be considered as a glyph variant, therefore not the
+module's business.
+</p>
+
+<h2>Never 4 times in a row the same symbol (except clockfaces)</h2>
+
+<img src="Boury.jpeg" alt="Tombstone in the Boury castle with the date MDCCCXXXXIV" align='right' / >
+<img src="Polla_via_popilia_da_reggio_a_capua.jpg" align='right' alt="Via Popilia stone" />
+<p align='right'><font size="2">
+Sources:
+<a href='http://fr.wikipedia.org/wiki/Fichier:Polla_via_popilia_da_reggio_a_capua.jpg'>Wikipedia</a>.
+Picture in the public domain;
+You can also see it in KM244, GG201 and GI142.
+Tombstone from the Boury castle, copyright 2009 by Philippe d'Alnoye, all rights reserved, used with his permission.
+Clockfaces, photos sent by Yves Agostini,  all rights reserved, used with his permission.
+</font></p>
+
+<p>
+On the <i lang='la'>Via Popilia</i> mile stone, you can read the
+number 74 written as "LXXIIII" (distance from <i lang='la'>Muranum</i>)
+and the number 917 written as "DCCCCXVII".
+In addition, if you visit the
+<a href='http://www.chateaudeboury.com/'>Boury-en-Vexin castle</a>
+(in the Oise department, near Gisors  and the Eure department), you can
+see a tombstone with the 5th January 1844 written as
+"V <i>J<sup>ER</sup> </i>MDCCCXXXXIV".
+</p>
+<img src='horloge-Florence.jpg' alt='horloge à Florence' />
+<img src='horloge-Venise.jpg'   alt='horloge à Venise'   />
+<p>
+On some rather old clockfaces, the quadruple "I" applies not only to 4, but also
+to 9 and even, when this is a 24-hour clockface, to 14, 19 and 24.
+</p>
+
+<h3>Perl</h3>
+<p>
+<tt>Roman</tt>, <tt>Math::Roman</tt> (basic variant) and <tt>Text::Roman</tt> 
+reject a quadriplicated symbol.
+<tt>Convert::Number::Roman</tt>  accepts a quadriplicated "X",
+or "C", or "M". It even accepts a quintiplicated symbol
+(I tried with "C"). As for the quadriplicate "I", in a similar
+way to the "j" numeral, you can consider that "IIII" is a glyph
+variant of U+2163 = "IV".
+<tt>Roman::Unicode</tt> accepts quadriplicated symbols.
+For <tt>Math::Roman</tt> advanced variant, here is how you
+can accept quadriplicated symbols.
+</p>
+
+<pre>
+#!/usr/bin/perl
+#
+# Tests on Roman numeral modules
+#
+# Attempting to accept quadriplicated symbols
+
+use strict;
+use warnings;
+use Math::Roman;
+
+Math::Roman::tokens( "I", 1,
+                     "IV", 4, "IIII",  4,
+                     "V", 5,
+                     "VIIII",  9, "IX",   9,
+                     "X", 10,
+                     "XL", 40, "XXXX", 40,
+                     "L", 50);
+
+for (1, 5, 8, 13, 40, 44, 84, "I", 
+      "XXXXIV", "LXXXXIV") {
+  my $roman = Math::Roman->new($_);
+  my $arab  = $roman-&gt;as_number;
+  print "$_ -&gt; $arab -> $roman";
+  print "\n";
+}
+</pre>
+<p>
+This version accept quadriplicated symbols as well
+as subtractions. When converting from arabic
+to roman, the script will print 4 as "IIII"
+and 9 as "IX". You will have inconsistencies
+such as  49 = "XXXXIX", but this example was 
+essentially a demo of what can
+be done, not a pedagogical example of what should be done.
+</p>
+
+<h2>Subtraction of I from L, C, D or M, subtraction of X from D or M</h2>
+
+<img src='carolus_berg.jpg' alt="Commemoration of archbisshop Carolus Berg" />
+<p><font size="2">
+Picture sent by Abigail, all rights reserved, used with permission.
+</font></p>
+<p>
+GG 226 evokes a book published in
+Leyden in 1599, that is,
+"&#8557;&#8544;&#8579;&#8544;&#8579;&#8544;&#8557;". 
+Therefore, subtracting I from other than V or X, 
+in this case from C, is allowed. On the other hand
+this number may be a one-of-a-kind and GG explains
+that this breaking of the rule (if it really breaks
+a rule) brings an aesthetic expression of 1599.
+</p>
+<p>
+There is also the commemoration of archbisshop Karl Berg (Carolus Berg in Latin), in Salzburg.
+Karl Berg died in 1997, which is carved as "MIIIM", subtracting several I's from an M.
+</p>
+
+<h2>Subtracting no more than one digit</h2>
+
+<img src='Georgette-de-Montenay.jpg' alt='Frontispice of a book by Georgette de Montenay' align='right' />
+<img src="Polla_via_popilia_da_reggio_a_capua.jpg" align='right' alt="Via Popilia inscription" />
+
+<p align='right'><font size="2">
+Sources: Via Popilia,
+<a href='http://fr.wikipedia.org/wiki/Fichier:Polla_via_popilia_da_reggio_a_capua.jpg'>Wikipedia</a>,
+picture in the public domain.
+You can also see it in KM244, GG201 and GI142.
+<cite>Cent Emblemes Chrestiens</cite>
+<a href='http://www.emblems.arts.gla.ac.uk/french/bib-desc.php?id=FMOb'>Glasgow University</a>,
+this book is no longer copyrighted, Georgette de Montenay died in 1581.
+</font></p>
+
+<p>
+Once more, back to the
+<a href='http://fr.wikipedia.org/wiki/Via_Popilia'><i lang='el'>Via Popilia</i></a>, 
+The stone carver had a few problems with line length when he
+carved the distance until Reggio de Calabre, to write
+321 as "CCCXXI" and he had to write it on
+two lines. He already had a similar problem
+when writing the 84-mile distance until Capua,
+but there, he fixed this problem by writing this distance
+as "XXCIIII", which is more compact than
+"LXXXIV". We find the same writing of 84 on the
+frontispice of a book written by
+Georgette de Montenay, published in 1584, that is,
+"&#8557;&#8544;&#8579;.&#8544;&#8579;.XXCIIII.". 
+And we cannot pretend that the printer was using a narrow
+space to print the date.
+</p>
+<p>
+More recently, there was the year 1997 carved as "MIIIM", see above.
+There was also the "Palm IIIx", which
+some people call  "Palm7". And last, there is
+a paragraph on the French Wikipedia page, about the
+<a href='http://fr.wikipedia.org/wiki/Num%C3%A9ration_romaine#Extensions_modernes'>modern extensions</a> 
+of the <a href='http://fr.wikipedia.org/wiki/Num%C3%A9ration_romaine'>Roman Numbers</a>, 
+but I doubt that the mechanisms described there are real.
+</p>
+
+<p>
+Note that if you want to find <em>interesting</em> pages
+about Roman numbers on Google, you must not
+look for "Roman numbers", but for
+<a href='http://www.google.fr/search?hl=en&q=XXCIIII&btnG=Google+Search'>"XXCIIII"</a>.
+This is the way I found the 
+Georgette de Montenay book. And I found also the...
+<a href="http://no.wikipedia.org/wiki/Romertall">Norvegian wikipedia</a>.
+(and no other).
+</p>
+
+<h3>Perl</h3>
+<p>
+<tt>Roman</tt>, <tt>Math::Roman</tt> (basic variant)
+and <tt>Text::Roman</tt> reject the subtraction of
+a double digit.
+<tt>Roman::Unicode</tt> and
+<tt>Convert::Number::Roman</tt> accept reading numbers
+with the subtraction of a double digit, but give a wrong result.
+<tt>Math::Roman</tt> (advanced variant) supports the subtraction
+of double digits.
+</p>
+<pre>
+#!/usr/bin/perl
+#
+# Tests on Roman numeral modules
+#
+# Attempting to accept quadriplicated symbols
+# and subtractions of double symbols
+
+use strict;
+use warnings;
+use Math::Roman;
+
+Math::Roman::tokens( "I", 1,
+                     "IV", 4, "IIII",  4,
+                     "V", 5,
+                     "VIII",   8, "IIX",   8,
+                     "VIIII",  9, "IX",   9,
+                     "X", 10,
+                     "XL", 40, "XXXX", 40,
+                     "L", 50,
+                     "LXXX",  80, "XXC", 80,
+                     "LXXXX", 90, "XC",  90,
+                    );
+
+
+for (1, 5, 8, 13, 40, 44, 49, 84, 94, "I", 
+      "XXXXIV", "LXXXIV", "XXCIIII", "LXXXXIV", "XCIIII") {
+  my $roman = Math::Roman-&gt;new($_);
+  my $arab  = $roman-&gt;as_number;
+  print "$_ -&gt; $arab -&gt; $roman";
+  print "\n";
+}
+</pre>
+<p>
+You can notice that, in this example, the double subtraction
+is defined for 80, but neither for 30 (it would be useless)
+nor for 3.
+In addition, for an arabic to roman conversion,
+for 40, XXXX is preferred to XL, and for 80,
+XXC is preferred to LXXX and for  90 XC is preferred
+to LXXXX. This is just an example to show the power
+of the module, not to give a consistent result.
+</p>
+<h2>System with only Additions and Subtractions</h2>
+
+<p>
+Starting with the Medieval Ages, the system includes
+some multiplications. Yet, KM 281 notes that during
+the Roman Empire, we can sometimes find "IIM" for
+2000. But most examples from the three books come
+from the Medieval Era or later. Here are the exemples
+gathered by KM and GG.
+<pre>
+88               IIIIxx et huit          KM 285 GG 225 text from 1388
+
+                   M     C
+4473 florins     IIII, IIII, LXXIII      GG 225, spanish manuscript from 1392
+
+451 234 678 567  four Cli, two Cxxxiiii, millions, sixe Clxxviii M. five Clxvii
+                                         GG 225 texte from Baker in 1568
+
+300 000          CCCM                    KM 285, text from 1550
+
+                  M     C
+1859 Gulden      I  viij lix Gulden      KM 285, accounting book in Rüsselheim
+
+                      C
+1859 Gulden      xviii lix Gulden        KM 285, another part of the accounting book in Rüsselheim
+
+                    c
+1612             MVI XII                 KM 285, text from Köbel
+
+                         c     xx
+1485             mil.IIII  IIII   et V   KM 285
+
+                    E          c
+25/06/1644       XXV. IVIN M.VI.XLIIII   church in Saint-Crépin-Ibouvillers (personal visit)
+</pre>
+
+In the first example, you see IIIIxx for 80. While the fr-BE word for
+eighty is "octante" or "huitante", the fr-FR word for eighty is
+"quatre-vingts", litterally "four-score".  So it was written as such
+in Roman numerals.
+</p>
+<p>
+And going back to the Palm IIIx, with respect to the
+typographical differences between the I's and the x,
+I would interpret the number as a multiplicative
+number and therefore read this as "Palm 30".
+</p>
+
+<h3>Perl</h3>
+<p>
+I did not check this, I do not know how to represent
+the vertical stacking of two characters in a text-only file or a
+raised position above the mean height of a line.
+</p>
+
+<h2>You cannot go beyond 3999?</h2>
+
+<img src='styles-columna-rostrata.png' alt='Various styles for 1000, 5000, 10 000, 50 000 and 100 000, as well as the Columna Rostrata' align='right' />
+
+<p>
+When you count things beyond preface pages, 
+book chapters and members of a dynasty, for example
+when you take a census of the inhabitants
+of an empire or when you collect taxes, 
+inevitably you go above 3999. 
+Even if Adriano Ferreira tells us, in his module's POD:
+<blockquote>
+Acme::Roman does not like numbers greater than 3999.
+Why would you like such big numbers? 
+</blockquote>
+(Well, this is an <tt>Acme::</tt> module, so it is 
+probable Adriano was not entirely serious when writing
+this POD.) We have already seen above how, during the Medieval
+Ages, the use of multiplication allowed counting beyond 3999.
+But even using only addition and subtraction, the Romans could
+count way above 3999.
+</p>
+
+<p align='right'><font size="2">
+Source: personal drawing, based on GI 339, plus a copy-paste from
+<a href='http://glossographia.wordpress.com/2008/10/27/doorworks-2-columna-rostrata/'>Glossographia</a>
+by Stephen Chrisomalis.
+You can also see it in KM44, GG214 and GI340.
+</font></p>
+
+<p>
+I have already presented the alternate symbol for 1000, U+2180 or <font size="5">&#8576;</font>.
+There is also another symbol for 5000, U+2181 or  <font size="5">&#8577;</font> 
+and a symbol for 10000 as well, U+2182 or  <font size="5">&#8578;</font>.
+But we had to wait for  Unicode version 6 to write
+50000 = "|)))" = 
+"&#8544;&#8579;&#8579;&#8579;"
+and 100000 = "(((|)))" =
+"&#8557;&#8557;&#8557;&#8544;&#8579;&#8579;&#8579;".
+GI 339 shows 13 glyph variants for these numbers in 
+addition to the basic glyph. Here are some of them:
+</p>
+
+<p>
+On the other side, Romans did not go beyond
+100_000. Therefore, to write about a loot of more
+than 2 million bronze coins, the Duilius Columna Rostrata
+includes between 23 and 33 times the 
+<img src='100_000.png' alt='100 000 in Roman numerals' height='30' />
+character (or
+"&#8557;&#8557;&#8557;&#8544;&#8579;&#8579;&#8579;")
+according to the estimates of GI 340.
+This is the highest known number written numerically. But 
+Romans could go beyond, using number words instead of number symbols.
+KM 44 and GG 208 remind us that when Vespasian arrived
+on the Roman throne, the public debt was 40 milliards 
+sesterces (40 billions for US)
+as Suetonius wrote in his <cite>History of the Caesars</cite>.
+And note that in another page, in KM 28, it was said
+this was the treasury amount, not the public debt.
+</p>
+
+<h3>Perl</h3>
+<p>
+<tt>Convert::Number::Roman</tt> can read U+2181 = <font size="5">&#8577;</font> = 5000
+and U+2182 = <font size="5">&#8578;</font> = 10000 as well, but
+it stops there, like Unicode version 4, and it cannot deal with any
+combination of
+U+216D, U+2160 and U+2183 for these numbers and for
+50_000 and 100_000.
+<tt>Roman::Unicode</tt>, released after Unicode version 6, 
+uses these chars, plus U+2187 for 50_000 and U+2188 for 100_000.
+<tt>Lingua::Romana::Perligata</tt> can print such numbers. Example:
+<pre>
+use Lingua::Romana::Perligata;
+
+numbro  II tum XVI elevamentum da.
+
+numbrum            tum novumversum egresso scribe.
+numbrum comementum tum novumversum egresso scribe.
+</pre>
+gives:
+<pre>
+65536
+I)))((I))I))DXXXVI
+</pre>
+I do not know how to write a script in which
+<tt>Lingua::Romana::Perligata</tt> 
+reads such a number. This is why I use the computation of <tt>2**16</tt>
+to fill the variable <tt>$numbr</tt> above.
+</p>
+<p>
+<tt>Math::Roman</tt>, advanced variant, can print such
+numbers, but cannot read them. Maybe the parentheses 
+impede its normal operation, based on regular expressions.
+Example:
+</p>
+<pre>
+#!/usr/bin/perl
+#
+# Tests on Roman numeral modules
+#
+# Attempting to accept (((|))) for 100_000
+
+use strict;
+use warnings;
+use Math::Roman;
+
+Math::Roman::tokens( "I",             1, "IV",             4, "V",         5, "IX",                 9,
+                     "X",            10, "XL",            40, "L",        50, "XC",                90,
+                     "C",           100, "CD",           400, "D",       500, "X(|)",             900,
+                     "(|)",        1000, "(|)|))",      4000, "|))",    5000, "(|)((|))",        9000,
+                     "((|))",    10_000, "((|))|)))", 40_000, "|)))", 50_000, "((|))(((|)))",  90_000,
+                     "(((|)))", 100_000
+                    );
+
+
+for (1, 5, 8, 13, 40, 44, 49, 84, 94, 100_000, 234_002, 2_300_000, ) {
+  my $roman = Math::Roman-&gt;new($_);
+  my $arab  = $roman-&gt;as_number;
+  print "$_ -&gt; $arab -&gt; $roman";
+  print "\n";
+}
+</pre>
+<p>
+No other module can deal with these numbers.
+</p>
+
+<h2>Very big numbers</h2>
+
+<p>
+For the Romans, the threshold for very big numbers
+was 100_000, just like the milliard (US billion) is
+for us: in our case, we no longer use the same rules and we 
+usually adopt a power-of-10 based expression.
+Likewise, for the Romans, the basic mechanism
+is used until 100_000.
+Actually, there is no ancient Latin word for "million"
+(ancient Latin as opposed to medieval Latin).
+This word was first used by Marco Polo in about 1270 (GG 567)
+as an undefined big number, just like our present
+day "zillion". The first use of "million" as 
+"a thousand thousands" occurred in 1359
+(GG 205 KM 143). 
+Yet, three jokers crossed the 100_000 Roman limit.
+</p>
+
+<p>
+In 1582 Freigius used &#8557;&#8557;&#8557;&#8557;|&#8579;&#8579;&#8579;&#8579; for 
+one million and |&#8579;&#8579;&#8579;&#8579; for 500_000 (GG 212, GI 338-343).
+</p>
+
+<p>
+In December 2000, Damian Conway releases
+Lingua::Romana::Perligata
+where he writes 9999999999 as
+(((((((I)))))))((((((((I))))))))((((((I))))))(((((((I)))))))(((((I)))))((((((I))))))((((I))))(((((I)))))(((I)))((((I))))((I))(((I)))M((I))CMXCIX
+</p>
+
+<p>
+In June 2009 and again in August 2011, Jean Forget presents a talk about
+Roman numbers in which he shows Avogadro's number 6E+23 as
+|))))))))))))))))))))))(((((((((((((((((((((|)))))))))))))))))))))
+and a googol 1E+100 as
+((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((|))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+</p>
+
+<p>
+Note: we are still far behind Archimedes and his
+<cite>Counting of the Sands</cite>, as well as the Hindu mathematicians' achievements.
+</p>
+
+<h2>Back to big numbers</h2>
+
+<p>
+Another way to write big numbers in Roman numerals
+consists in using an overbar to multiply the number
+by 1000. And to multiply it by 100_000, the Romans used
+a "gate", a rectangular box with the bottom line missing (KM 44 uses the word "frame").
+Examples:
+</p>
+
+<pre>
+              -------
+83 000        LXXXIII            GI 339
+
+              ----
+4 870         IIIIDCCCLXX        GI 340
+
+              -----
+1 200 000     |XII|              GI 342
+
+              ------
+1 300 000     |XIII|             GI 342
+
+              ----
+200 000 000   |&#8576;&#8576;|               GI 342
+
+              - ------
+164 351       c.lxiiij.ccc.l.i   GG 225, Adélard de Bath 1120
+
+</pre>
+
+<p>
+The three authors have somewhat diverging opinions about this
+technic. 
+KM 245-281 writes that this method is mostly seen in
+medieval writings and seldom in Roman Empire writings.
+During the Roman era, he says that the overbar was a way
+to differentiate letter-numerals from real letters.
+Examples:
+</p>
+
+<pre>
+---
+IIIVIR = triumvir (KM 281, GI 340)
+
+                 ---
+COMMENT PARTAGER DIX CACAHUÈTES ENTRE DIX PERSONNES
+
+How to share 509 peanuts between 10 people (example I created for this purpose)
+</pre>
+
+<img src='RomanAbacusRecon.jpg' alt='Roman Abacus' align='right' />
+
+<p align='right'><font size="2">
+Source: 
+<a href='http://fr.wikipedia.org/wiki/Fichier:RomanAbacusRecon.jpg'>Wikipedia</a>
+photo under the <a href='http://fr.wikipedia.org/wiki/Licence_de_documentation_libre_GNU'>GNU FDL</a>.
+</font></p>
+
+<p>
+GI 340 acknowledges that this method exists (using an overbar to give
+a numeric context, but not a 1000-multiplication)
+but he considers this is a very old usage, no longer
+used at the end of the Roman Republic, when the overbar
+was used to multiply by 1000.
+We can notice that the use of overbar and gate 
+and the use of the <font size="5">&#8576;</font>-like
+symbols are not exclusive. They are both used on a
+Roman abacus kept at the Cabinet des Médailles 
+of the 
+Bibliothèque Nationale de Paris (French National Library). 
+On this abacus, the first seven headers are:
+</p>
+
+<pre>
+---
+|X|      (((|)))      ((|))       &#8734;    C     X    I
+</pre>
+
+<p>
+(The rightmost columns show various divisions of the sesterce.
+Read KM or GI for more explanations).
+</p>
+
+<p>
+KM 28, GG 223 and GI 343 include an anecdote
+reported by Suetonius in his <cite>History of Caesars</cite>.
+In her will, Livia had promised to Galba this amount:
+<pre>
+   -------
+HS 'CCCCC'
+</pre>
+(Note the short length of the vertical strokes 
+of the gate). Thus, Galba was hoping to
+receive 50 million sesterces.
+<pre>
+   -------
+HS |CCCCC|
+</pre>
+(CCCCC within a "gate"). But Tiber
+decreated that the will stated only 500000 sesterces,
+that is,
+<pre>
+   -----
+HS CCCCC
+</pre>
+The descending strokes, said he, were much to small
+to have any significance.
+Note that in KM 28, Galba was to receive only
+500 sesterces, because the overbar according to KM
+was seldom a multiplication by 1000.
+</p>
+
+<p>
+GI 341 notes that there is no serious example
+of a possible double overbar which would have multiplied
+the number by one million. The reason is the Romans had
+a big-number threshold at 100_000, not at 1_000_000
+(GG 213-218). This did not prevent the 
+<a href='http://fr.wikipedia.org/wiki/Nombres_romains'>French Wikipedia</a>
+to pretend that the millions used a double-macron.
+This did not prevent either the W3C to specify the use of
+a double- then triple-, quadruple- etc. -overbar, for the
+millions, milliards (billions of US), billions (trillions for US)
+and so on. See the
+<a href='http://www.w3.org/TR/css3-lists/'>specification for HTML lists</a>.
+Here is an example of list written as:
+
+<pre>
+&lt;ol start='123456789' type='I'&gt;
+</pre>
+If you browser is recent enough, you will see overlined Roman numbers.
+On my computer, this is not the case.
+</p>
+
+<ol start='123456789' type='I'>
+<li>First element</li>
+<li>Second element</li>
+</ol>
+
+<h3>Perl</h3>
+<p>
+<tt>Convert::Number::Roman</tt> knows overline (which is good)
+and also double overline, triple overline and so on (which
+is bad, but consistent with
+<a href='http://www.w3.org/TR/css3-lists/'>http://www.w3.org/TR/css3-lists/</a>). 
+It does not know the gate (neither do Unicode and W3C).
+And it cannot convert in the other way.
+<a href='ex-cnr.en.html' name='ex-cnr'>Here is an example</a> 
+(not inline, because the output
+is rather lengthy). When I run it on an xterm,
+the overlines are properly combined with the preceding
+spacing character. But when I display it with Firefox,
+the overlines are displayed besides the spacing character.
+Your mileage may vary.
+</p>
+
+
+
+<p>
+<tt>Text::Roman</tt> simulates overline by adjoining one or more
+underlines (U+005F) and is able to read numbers
+written this way, such as "LX_XXIII" which simulates
+"L&#772;X&#772;XXIII" (in case you cannot see it, there is a macron
+above the first two characters) and is equal to 60023.
+Yet, you must use one function for numbers without simulated
+overlines and another function for numbers with simulated
+overlines:
+<pre>
+use Text::Roman;
+
+for my $rm (qw/I IV LX_XXIII L_X_XXIII/) {
+  my $ar = roman2int($rm);
+  print "roman2int  $rm -&gt; $ar\n";
+  $ar = mroman2int($rm);
+  print "mroman2int $rm -&gt; $ar\n";
+}
+</pre>
+which results in:
+<pre>
+roman2int  I -&gt; 1
+mroman2int I -&gt; 
+roman2int  IV -&gt; 4
+mroman2int IV -&gt; 
+roman2int  LX_XXIII -&gt; 
+mroman2int LX_XXIII -&gt; 60023
+roman2int  L_X_XXIII -&gt; 
+mroman2int L_X_XXIII -&gt; 60023
+</pre>
+The initial "m" of <tt>mroman2int</tt> means "milhar"
+and designates, according to Peter de Padua Krauss 
+the roman numbers with a 1000-multiplicating overline.
+It seems that this is a word
+<a href='http://pt.thefreedictionary.com/milhar'>directly importated from portugese</a>.
+This is why I guess that this statement issues from
+Peter de Padua Krauss who lives in Brazil according to his e-mail address,
+rather than Stanislas Pusep. In addition, the author
+makes an error when pretending that the "milhar"
+roman numbers can reach 4002999. This number is the result
+of the formula 3999x1000+3999, and makes us think that
+you may find in the same number thousands expressed as
+a M's and thousands expressed as overlined I's.
+This is false.
+</p>
+
+<p>
+No other module can deal with overline.
+</p>
+
+
+<h2>A third notation for big numbers</h2>
+
+<p>
+My computer's IP address is 2130706433.
+But we are used to a dotted notation:
+127.0.0.1, using the following factors: 16277216,
+65536, 256 and 1. A similar mechanism exists with
+Roman numbers, with factors
+100000, 1000 and 1.
+Examples:
+</p>
+<pre>
+  312 600    III.XII.DC    GG 216 quoting B. Dupiney de Vorepierre's Encyclopedia
+1 250 500    XII.L.D       GG 216 quoting Alpinolo Natucci
+</pre>
+
+<p>
+But there are many irregularities, explained at length by GG.
+The dot can mean a multiplication by 1000 or 100000, but it can
+simply mean an addition. In some cases, you can guess the
+precise roles of the dots, but in other cases, they
+are ambiguous. For example,
+</p>
+
+<pre>
+XVII.L.       may mean any of 17050, 1700050 or 1750000 (GG 218)
+II.DCCC.XIIII can only mean 2814 (GG 225)
+</pre>
+
+<h2>How did the Romans compute?</h2>
+
+<img src='RomanAbacusRecon.jpg' alt='Roman Abacus' align='right' />
+
+<p align='right'><font size="2">
+Source: 
+<a href='http://fr.wikipedia.org/wiki/Fichier:RomanAbacusRecon.jpg'>Wikipedia</a>
+picture under <a href='http://fr.wikipedia.org/wiki/Licence_de_documentation_libre_GNU'>GNU Free Documentation License</a>.
+</font></p>
+
+<blockquote>
+Programming X-Windows is like trying to find the square root of pi using roman numerals.
+</blockquote>
+<p>
+Anonymous quote found in
+<a href='http://www.art.net/~hopkins/Don/unix-haters/x-windows/disaster.html'><cite lang='en'>Unix Haters</cite></a>
+</p>
+
+<p>
+If you believe the
+<a href='http://fr.wikipedia.org/wiki/Nombres_romains'>French Wikipedia</a>,
+in order to compute, the Romans had to learn some multiplications
+by heart, for exeample XII x XII = CXLIV, which would allow them
+to obtain the result of neighbouring computations, that is, the
+product of XII by one more or by one less. But knowing the square
+of XII will not help you to compute 720 x 62.
+I must admit that the author of this paragraph starts his
+sentence by "It may be".
+Actually, the way the Romans did computations is rather well
+known and is described at length in GI's chapter 8 and in
+KM's pages 297 to 388 (not all 92 pages deal with Romans, 
+many deal with other civilisations). Romans used
+abaci (<i lang='fr'>tables à poussière</i> and other
+types). This technique actually implies a decimal positional
+notation, but it was not fit to record and store numbers.
+In other words, the Romans did not know how to implement
+persistence in the abacus.
+</p>
+
+<p>
+The abacus allows you to perform the four basic operations,
+but not much more (yet, Richard Feynman reports an encounter
+with a Japanese who knew how to compute cubic roots with
+a soroban, the operation of which is similar to the abacus
+above). But how could the Romans perform complicated
+computations? How, for example, could they compute the 
+square root of &#960;?
+Neither KM, nor GG nor GI explain it, but it is  likely
+that the Romans who needed complicated computations,
+that is the very few Roman scientists and the more
+numerous Roman engineers and architects had received
+an education more thorough than their contemporaries.
+This education included learning to speak, read and write the
+Greek language. Therefore, the scientists, the engineers and
+the architects could learn the Greek numerations and the
+computation methods devised by their Greek forerunners:
+Euclide, Thales, Eratosthene, Archimedes, etc.
+</p>
+
+<h2>As a conclusion...</h2>
+
+<p>
+The simplified Roman number system, the one everybody
+knows, is correctly dealt with by four simple modules
+with a light footprint:
+<a href='http://search.cpan.org/dist/Roman/'><tt>Roman</tt></a>,
+<a href='http://search.cpan.org/dist/Roman-Unicode/'><tt>Roman::Unicode</tt></a>,
+<a href='http://search.cpan.org/dist/Text-Roman/'><tt>Text::Roman</tt></a>
+and <a href='http://search.cpan.org/dist/Math-Roman/'><tt>Math::Roman</tt></a>.
+You choose the module with the API which suits you
+the best. This is not like other domains in which you
+are overwhelmed by a plethora of CPAN modules of 
+highly varying quality (e-mail, OOP, etc).
+As for the fourth serious module,
+<a href='http://search.cpan.org/dist/Convert-Number-Roman/'><tt>Convert::Number::Roman</tt></a>,
+the only one which deals with Unicode, we can
+only regret it is based on a specification which
+is... baroque and unvoluntarily funny.
+</p>
+
+<p>
+On the other hand, if you want to deal with the historical
+Roman number system, with all its peculiarities and irregularities,
+the task is more difficult. Some modules deal with one 
+or two aspects of the Roman number system:
+overlining with <a href='http://search.cpan.org/dist/Text-Roman/'><tt>Text::Roman</tt></a>
+and <a href='http://search.cpan.org/dist/Convert-Number-Roman/'><tt>Convert::Number::Roman</tt></a>
+and the "(|)"-like numbers with
+<a href='http://search.cpan.org/dist/Lingua-Romana-Perligata/'><tt>Lingua::Romana::Perligata</tt></a>
+and <a href='http://search.cpan.org/dist/Roman-Unicode/'><tt>Roman::Unicode</tt></a>.
+Or you use the advanced variant of 
+<a href='http://search.cpan.org/dist/Math-Roman/'><tt>Math::Roman</tt></a>
+to emulate one or two historical variants.
+If you want to emulate all the historical variants
+shown above and even trigger an error on invalid input,
+you will have to code a rather lengthy call to <tt>tokens</tt>.
+I had the intention to write my own conversion module,
+which would have dealt with all the mechanisms described above,
+but I gave up (temporarily? :-).
+And quoting Douglas Adams when he was describing Vogons ships,
+if most number systems have been designed, elaborated and built
+on sensible and rational grounds, the Roman number system
+gives the impression that it was not the result of a design,
+but rather of congelation.
+</p>
+
+<h2>Small Print</h2>
+
+<p>
+&copy; 2011 Jean Forget and Les Mongueurs de Perl.
+The text and the personal pictures are under
+<a href='http://creativecommons.org/licenses/by-nd/2.0/fr/'>Creative Commons license with paternity, no modification</a>.
+For the other pictures, I have indicated each time the license.
+</p>
+
+<p>
+Many thanks to those who attended my talks, especially to those who
+contributed with constructive remarks.
+And thanks to Yves Agostini, Philippe d'Alnoye and Abigail for the pictures they sent me.
+</p>
+<hr />
+<a href='../../index.html'>Main page</a>
+
+</body>
+</html>

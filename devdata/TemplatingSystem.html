@@ -1,0 +1,1972 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        
+        <link href="../../../../style.css" rel="stylesheet" type="text/css" title="refstyle">
+        <link href="../../../../print.css" rel="stylesheet" type="text/css" title="refstyle" media="print">
+        <meta name="description" content="mod_perl documentation: Everything you wanted to know about templating systems and didn't dare
+to ask. Well, not everything....">
+        <meta name="keywords" content="mod_perl modperl perl cgi apache webserver speed fast guide mod_perl asf parent apache guide help info faq mod_perl installation cgi troubleshooting help no speedup child process rules free open source OSS mod_perl speed apache guide manual troubleshoot cgi fast apache">
+        <meta name="author" content="docs-dev (at) perl.apache.org">
+        <meta name="classification" content="information">
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+        <style type="text/css">
+                body {
+                    background-color: #ffffff;
+                    background-image: url(../../../../images/bgline.gif);
+                    background-attachment: fixed;  /* needed for mac/ie5*/
+                    color: #000000;
+                    font-family: helvetica, arial, verdana, sans-serif;
+                    /* font-size: 1.0em; */
+                    position: relative !important; /* needed for ie5*/
+                }
+         </style>
+         <title>mod_perl: Choosing a Templating System</title>
+        <link rel="shortcut icon" href="../../../../images/favicon.ico" type="image/x-icon">
+
+    </head>
+<body class="body-margins">
+<a name="top"></a>
+
+<!-- Swishcommand noindex -->
+
+<!-- logobox begin -->
+<div class="logobox">
+    <table border="0" cellspacing="0" cellpadding="0" width="100%">
+        <tr valign="top" class="noPrint">
+            <td rowspan="12"><a href="http://perl.apache.org/"><img src="../../../../images/logo/logo_blend.gif" border="0" alt="mod_perl logo" width="195" height="52"></a></td>
+
+
+        <!-- breadcrumb and topline begin -->
+        
+        <!-- this silly width is needed for ns4 due to its default paddings in divs, notably rightbox-div -->
+        <td width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+
+        <td class="navbarglobal" height="31" width="100%" valign="bottom">
+            <!-- breadcrumb start -->
+            <a href="../../../../index.html"><b>Home</b></a> / 
+            <a href="../../../index.html"><b>Documentation</b></a> / 
+            <a href="../../index.html"><b>Tutorials</b></a> / 
+            <!-- breadcrumb end -->
+        </td>
+        <!-- camel begin -->
+        <td rowspan="2" align="right" valign="bottom"><a href="http://www.perl.com"><img src="../../../../images/logo/blue_sm_camel.gif" border="0" alt="perl icon" width="27" height="37"></a></td>
+        <td rowspan="2" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        <!-- camel end -->
+    </tr>
+    <tr valign="top" class="noPrint">
+        <td colspan="2" height="6"><img src="../../../../images/trans_pix.gif"></a></td>
+    </tr>
+
+    <!-- topline begin -->
+    <tr valign="top" class="noPrint">
+        <td colspan="3" height="1" class="camel-line-top"><img src="../../../../images/trans_pix.gif"></a></td>
+        <td><img src="../../../../images/trans_pix.gif"></a></td>
+   </tr>
+    <tr valign="top" class="noPrint">
+        <td colspan="3" height="1" class="camel-line-bottom"><img src="../../../../images/trans_pix.gif"></a></td>
+        <td><img src="../../../../images/trans_pix.gif"></a></td>
+    </tr>
+    <!-- topline end -->
+
+    <tr valign="top" class="noPrint">
+        <td height="3" colspan="4"><img src="../../../../images/trans_pix.gif"></a></td>
+    </tr>
+
+        <!-- local navigation begin -->
+        <tr valign="top" class="noPrint">
+            <!-- this particular first cell is here due to a strange bug in IE5 for mac -->
+            <td><img src="../../../../images/trans_pix.gif"></a></td>
+            <td colspan="2" align="right" valign="top" height="16" nowrap><a href="../../apps/scale_etoys/etoys.html"><img src="../../../../images/nav/page_prev.gif" alt="previous page: Building a Large-Scale E-commerce site with Apache and mod_perl" border="0" width="48" height="16"></a><a href="../../index.html"><img src="../../../../images/nav/page_parent.gif" alt="page up: Tutorials" border="0" height="16" width="25"></a><a href="../../tips/mod_perl_tricks/mod_perl_tricks.html"><img src="../../../../images/nav/page_next.gif" alt="next page: Cute Tricks With Perl and Apache" border="0" width="48" height="16"></a></td>
+            <td width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+        <!-- local navigation end -->
+
+        <!-- some space -->
+        <tr>
+            <td height="20" colspan="4"><br></td>
+        </tr>
+
+        <tr>
+            <!-- title begin -->
+            <td><img src="../../../../images/trans_pix.gif"></a></td>
+            <td colspan="2" class="headline" valign="bottom" width="100%">Choosing a Templating System</td>
+            <td width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <!-- title end -->
+        </tr>
+
+
+        <tr>
+            <td height="2" colspan="4"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+        <tr>
+            <td><img src="../../../../images/trans_pix.gif"></a></td>
+            <!-- title line begin -->
+            <td colspan="2" class="blue-bg" height="4"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <!-- title line end -->
+        </tr>
+        <tr>
+            <td height="2" colspan="4"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr class="noPrint">
+            <!-- download begin -->
+            <td colspan="3" align="right" valign="bottom" nowrap><a href="comparison.pdf"><img src="../../../../images/nav/page_pdf.gif" height="15" width="40" border="0" alt=""></a><a href="comparison.pod.orig"><img src="../../../../images/nav/page_src.gif" height="15" width="40" border="0" alt=""></a></td>
+            <td width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <!-- download end -->
+        </tr>    
+    </table>
+</div>
+<!-- logobox end -->
+
+<!-- left box begin -->
+<div class="leftbox noPrint">
+    <!-- menu main begin -->
+    <table border="0" cellspacing="0" cellpadding="0" width="150" align="center">
+        <tr>
+            <td class="menu-border" width="1" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="148"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td align="center" class="menu-title-bg">
+                <div class="menu-title"><a href="http://perl.apache.org/">perl.apache.org</a></div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../start/index.html">What is mod_perl?</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../outstanding/index.html">Success Stories</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../download/index.html">Download</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="sel-bg">
+                <div class="selectedmenuitem">
+                    <a href="../../../../docs/index.html">Documentation</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../bugs/index.html">Reporting Bugs</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../help/index.html">Getting Help</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../maillist/index.html">Mailing Lists</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../products/index.html">Products</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../contribute/index.html">Contribute</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../advocacy/index.html">Got mod_perl?</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../about/index.html">About mod_perl</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../projects/index.html">mod_perl subprojects</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../jobs/jobs.html">Jobs</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../sitemap.html">Site Map</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+    </table>
+    <!-- menu main end -->
+
+    <br>
+
+    <!-- search begin -->
+
+    
+
+
+
+    
+
+    
+
+
+    <table border="0" cellspacing="0" cellpadding="0" width="150" align="center">
+        <tr>
+            <td class="menu-border" width="1" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="148"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td align="center" class="menu-title-bg">
+                <div class="menu-title"><a href="../../../../search/swish.cgi">Search</a></div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="search-box-bg" align="center">
+                <form class="search-wrap" method="GET" action="../../../../search/swish.cgi" enctype="application/x-www-form-urlencoded" name="site_search_form">
+                    
+            
+        <input type="text" name="query" size="12" maxlength="200" value="" class="inp-text">
+    
+            
+
+
+        <select name="sbm"  class="inp-select">
+<option selected="selected" value="">Whole Site</option>
+<option value="SecA">What&#39;s mp?</option>
+<option value="SecB">Stories</option>
+<option value="SecC">Download</option>
+<option value="SecD">All Docs</option>
+<option value="SecE">..1.0 Docs</option>
+<option value="SecF">....Guide 1.0</option>
+<option value="SecG">....OS 1.0</option>
+<option value="SecH">....API 1.0</option>
+<option value="SecI">..2.0 Docs</option>
+<option value="SecJ">....User 2.0</option>
+<option value="SecK">....OS 2.0</option>
+<option value="SecL">....Devel 2.0</option>
+<option value="SecM">....API 2.0</option>
+<option value="SecN">..General Docs</option>
+<option value="SecO">..Tutorials</option>
+<option value="SecP">..OffSite Docs</option>
+<option value="SecQ">Getting Help</option>
+<option value="SecR">Mailing Lists</option>
+<option value="SecS">Products</option>
+<option value="SecT">Contribute</option>
+<option value="SecU">About</option>
+</select>
+    
+            <br>
+            <input type="submit" name="submit" value="search" class="inp-submit">
+
+                </form>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- search end -->
+
+    <br>
+
+    <!-- menu short_cuts begin -->
+
+    <table border="0" cellspacing="0" cellpadding="0" width="150" align="center">
+        <tr>
+            <td class="menu-border" width="1" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="148"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td align="center" class="menu-title-bg">
+                <div class="menu-title">Short Cuts</div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../maillist/modperl.html#Subscription_Information">Maillist Subscription</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../maillist/modperl.html#Searchable_Archives">Maillist Archives</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../download/source.html">The source</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../docs/1.0/guide/index.html">The 1.0 guide</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../docs/2.0/user/intro/start_fast.html">Starting with 2.0</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../docs/2.0/user/porting/compat.html">Migrating to 2.0</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../docs/1.0/guide/help.html#How_to_Report_Problems">Report 1.0 Problems</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../docs/2.0/user/help/help.html#Reporting_Problems">Report 2.0 Problems</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="../../../../products/apache-modules.html#Porting_CPAN_modules_to_mod_perl_2_0_Status">CPAN 2.0 Modules Porting Status</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+    </table>
+    <!-- menu short_cuts end -->
+
+    <br>
+
+    <!-- asf links begin -->
+
+    <table border="0" cellspacing="0" cellpadding="0" width="150" align="center">
+        <tr>
+            <td class="menu-border" width="1" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="148"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td align="center" class="menu-title-bg">
+                <div class="menu-title">The Apache Software Foundation</div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://www.apache.org/">ASF Home</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://www.apache.org/foundation/sponsorship.html">ASF Sponsorship</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://www.apache.org/foundation/thanks.html">ASF Thanks</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+    </table>
+    <!-- asf links end -->
+
+    <br>
+
+    <!-- menu links begin -->
+
+    <table border="0" cellspacing="0" cellpadding="0" width="150" align="center">
+        <tr>
+            <td class="menu-border" width="1" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="148"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td align="center" class="menu-title-bg">
+                <div class="menu-title">Sister Sites</div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://www.apacheweek.com/">Apache Week</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://www.perl.org/">Perl Mongers</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://use.perl.org/">Use Perl</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border"><br></td>
+            <td class="non-sel-bg">
+                <div class="nonselectedmenuitem">
+                    <a href="http://www.perlmonks.org/">Perl Monks</a>
+                </div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+    </table>
+    <!-- menu links end -->
+
+    <br>
+
+    <!-- ad begin -->
+
+    <table border="0" cellspacing="0" cellpadding="0" width="150" align="center">
+        <tr>
+            <td class="menu-border" width="1" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="148"><img src="../../../../images/trans_pix.gif"></a></td>
+            <td class="menu-border" width="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border"><br></td>
+            <td align="center" class="menu-title-bg">
+                <div class="menu-title"><a href="../../../../docs/offsite/books.html">Books</a></div>
+            </td>
+            <td class="menu-border"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+     
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    Writing Apache Modules with Perl and C<br><br>
+                    <a href="http://www.modperl.com/">
+                        <img src="../../../../images/books/wrapmod.jpg" border="1" align="middle" width="107" height="140" class="img-border" alt="Writing Apache Modules with Perl and C"></a>
+                    <br><br>
+                    <em>By Lincoln Stein, Doug MacEachern</em>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    Embedding Perl in HTML with Mason<br><br>
+                    <a href="http://www.masonbook.com/">
+                        <img src="../../../../images/books/masonbook.jpg" border="1" align="middle" width="107" height="140" class="img-border" alt="Embedding Perl in HTML with Mason"></a>
+                    <br><br>
+                    <em>By Dave Rolsky, Ken Williams</em>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    mod_perl2 User's Guide<br><br>
+                    <a href="http://modperl2book.org/">
+                        <img src="../../../../images/books/mod_perl2_users_guide.jpg" border="1" align="middle" width="128" height="192" class="img-border" alt="mod_perl2 User's Guide"></a>
+                    <br><br>
+                    <em>By <a href='http://chestofbooks.com/'>Stas Bekman</a>, Jim Brandt</em>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    Practical mod_perl<br><br>
+                    <a href="http://modperlbook.org/">
+                        <img src="../../../../images/books/practical_modperl.jpg" border="1" align="middle" width="128" height="169" class="img-border" alt="Practical mod_perl"></a>
+                    <br><br>
+                    <em>By <a href='http://stason.org/'>Stas Bekman</a>, Eric Cholet</em>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    The mod_perl Developer's Cookbook<br><br>
+                    <a href="http://www.modperlcookbook.org/">
+                        <img src="../../../../images/books/modperlcookbook.jpg" border="1" align="middle" width="113" height="140" class="img-border" alt="The mod_perl Developer's Cookbook"></a>
+                    <br><br>
+                    <em>By Geoffrey Young, Paul Lindner, Randy Kobes</em>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    mod_perl Pocket Reference<br><br>
+                    <a href="http://www.oreilly.com/catalog/modperlpr/">
+                        <img src="../../../../images/books/modperlpr.jpg" border="1" align="middle" width="85" height="140" class="img-border" alt="mod_perl Pocket Reference"></a>
+                    <br><br>
+                    <em>By Andrew Ford</em>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+
+        <tr>
+            <td class="menu-border" width="1"><br></td>
+            <td class="ad-bg">
+                <div class="adtext">
+                    <div class="nonselectedmenuitem">
+                        <em><a href="../../../../docs/offsite/books.html">More mod_perl books...</a></em>
+                    </div>
+                </div>
+            </td>
+            <td class="menu-border" width="1"><br></td>
+        </tr>
+
+        <tr>
+            <td class="menu-border" colspan="3" height="1"><img src="../../../../images/trans_pix.gif"></a></td>
+        </tr>
+
+
+    </table>
+    <!-- ad end -->
+
+    <br><br>
+
+</div>
+<!-- left box end -->
+
+<!-- right box begin-->
+<div class="rightbox">
+
+    <!-- content begin -->
+    <h3>Table of Contents</h3>
+    <div class="toc">
+        <ul class="toc">
+            <li>
+                <a name="toc_Description"></a><a href="#Description">Description</a>                
+            </li>
+            <li>
+                <a name="toc_Introduction"></a><a href="#Introduction">Introduction</a>
+        <ul class="toc">
+            <li>
+                <a name="toc_On_A_Personal_Note"></a><a href="#On_A_Personal_Note">On A Personal Note</a>                
+            </li>
+        </ul>
+                
+            </li>
+            <li>
+                <a name="toc_Why_Use_Templates_"></a><a href="#Why_Use_Templates_">Why Use Templates?</a>
+        <ul class="toc">
+            <li>
+                <a name="toc_Consistency_of_Appearance"></a><a href="#Consistency_of_Appearance">Consistency of Appearance</a>                
+            </li>
+            <li>
+                <a name="toc_Reusability"></a><a href="#Reusability">Reusability</a>                
+            </li>
+            <li>
+                <a name="toc_Better_Isolation_from_Changes"></a><a href="#Better_Isolation_from_Changes">Better Isolation from Changes</a>                
+            </li>
+            <li>
+                <a name="toc_Division_of_Labor"></a><a href="#Division_of_Labor">Division of Labor</a>                
+            </li>
+        </ul>
+                
+            </li>
+            <li>
+                <a name="toc_What_Are_the_Differences_"></a><a href="#What_Are_the_Differences_">What Are the Differences?</a>
+        <ul class="toc">
+            <li>
+                <a name="toc_Execution_Models"></a><a href="#Execution_Models">Execution Models</a>                
+            </li>
+            <li>
+                <a name="toc_Languages"></a><a href="#Languages">Languages</a>                
+            </li>
+            <li>
+                <a name="toc_Parsers_and_Caching"></a><a href="#Parsers_and_Caching">Parsers and Caching</a>                
+            </li>
+            <li>
+                <a name="toc_Application_Frameworks_vs__Just_Templates"></a><a href="#Application_Frameworks_vs__Just_Templates">Application Frameworks vs. Just Templates</a>
+        <ul class="toc">
+            <li>
+                <a name="toc_URL_Mapping"></a><a href="#URL_Mapping">URL Mapping</a>                
+            </li>
+            <li>
+                <a name="toc_Session_Tracking"></a><a href="#Session_Tracking">Session Tracking</a>                
+            </li>
+            <li>
+                <a name="toc_Output_Caching"></a><a href="#Output_Caching">Output Caching</a>                
+            </li>
+            <li>
+                <a name="toc_Form_Handling"></a><a href="#Form_Handling">Form Handling</a>                
+            </li>
+            <li>
+                <a name="toc_Debugging"></a><a href="#Debugging">Debugging</a>                
+            </li>
+        </ul>
+                
+            </li>
+        </ul>
+                
+            </li>
+            <li>
+                <a name="toc_The_Contenders"></a><a href="#The_Contenders">The Contenders</a>
+        <ul class="toc">
+            <li>
+                <a name="toc_SSI"></a><a href="#SSI">SSI</a>                
+            </li>
+            <li>
+                <a name="toc_HTML__Mason"></a><a href="#HTML__Mason">HTML::Mason</a>                
+            </li>
+            <li>
+                <a name="toc_HTML__Embperl"></a><a href="#HTML__Embperl">HTML::Embperl</a>                
+            </li>
+            <li>
+                <a name="toc_Apache__ASP"></a><a href="#Apache__ASP">Apache::ASP</a>                
+            </li>
+            <li>
+                <a name="toc_Text__Template"></a><a href="#Text__Template">Text::Template</a>                
+            </li>
+            <li>
+                <a name="toc_Template_Toolkit"></a><a href="#Template_Toolkit">Template Toolkit</a>                
+            </li>
+            <li>
+                <a name="toc_HTML__Template"></a><a href="#HTML__Template">HTML::Template</a>                
+            </li>
+            <li>
+                <a name="toc_AxKit2"></a><a href="#AxKit2">AxKit2</a>                
+            </li>
+            <li>
+                <a name="toc_HTML_Tree"></a><a href="#HTML_Tree">HTML_Tree</a>                
+            </li>
+            <li>
+                <a name="toc_Petal_and_Template__TAL"></a><a href="#Petal_and_Template__TAL">Petal and Template::TAL</a>                
+            </li>
+            <li>
+                <a name="toc_ePerl"></a><a href="#ePerl">ePerl</a>                
+            </li>
+            <li>
+                <a name="toc_CGI__FastTemplate"></a><a href="#CGI__FastTemplate">CGI::FastTemplate</a>                
+            </li>
+        </ul>
+                
+            </li>
+            <li>
+                <a name="toc_Performance"></a><a href="#Performance">Performance</a>
+        <ul class="toc">
+            <li>
+                <a name="toc_CGI_Performance_Concerns"></a><a href="#CGI_Performance_Concerns">CGI Performance Concerns</a>                
+            </li>
+        </ul>
+                
+            </li>
+            <li>
+                <a name="toc_Updates"></a><a href="#Updates">Updates</a>                
+            </li>
+            <li>
+                <a name="toc_Maintainers"></a><a href="#Maintainers">Maintainers</a>                
+            </li>
+            <li>
+                <a name="toc_Authors"></a><a href="#Authors">Authors</a>                
+            </li>
+        </ul>
+    </div>
+
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Description"></a><a href="#toc_Description">Description</a></h1>
+
+<p>Everything you wanted to know about templating systems and didn't dare
+to ask. Well, not everything....</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Introduction"></a><a href="#toc_Introduction">Introduction</a></h1>
+
+<p>Go on, admit it: you've written a templating system.  It's okay,
+nearly everyone has at some point.  You start out with something
+beautifully simple like <code>$HTML =~ s/\$(\w+)/${$1}/g</code> and end up
+adding conditionals and loops and includes until you've created your
+very own unmaintainable monster.</p>
+<p>Luckily for you, you are not the first to think it might be nice to get
+the HTML out of your code.  Many have come before, and more than a few
+have put their contributions up on CPAN.  At this time, there are so
+many templating modules on CPAN that it's almost certain you can find
+one that meets your needs.  This document aims to be your guide to
+those modules, leading you down the path to the templating system of
+your dreams.</p>
+<p>And, if you just went straight to CPAN in the first place and never
+bothered to write your own, congratulations: you're one step ahead of
+the rest of us.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="On_A_Personal_Note"></a><a href="#toc_On_A_Personal_Note">On A Personal Note</a></h2>
+
+<p>Nothing can start an argument faster on the mod_perl mailing list than
+a claim that one approach to templating is better than another.
+People get very attached to the tools they've chosen.  Therefore, let
+me say up front that I am biased.  I've been at this for a while and I
+have opinions about what works best.  I've tried to present a balanced
+appraisal of the features of various systems in this document, but it
+probably won't take you long to figure out what I like.  Besides,
+attempts to be completely unbiased lead to useless documents that
+don't contain any real information.  So take it all with a pound of
+salt and if you think I've been unfair to a particular tool through a
+factual error or omission, let me know.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Why_Use_Templates_"></a><a href="#toc_Why_Use_Templates_">Why Use Templates?</a></h1>
+
+<p>Why bother using templates at all?  Print statements and CGI.pm were
+good enough for Grandpa, so why should you bother learning a new way
+to do things?</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Consistency_of_Appearance"></a><a href="#toc_Consistency_of_Appearance">Consistency of Appearance</a></h2>
+
+<p>It doesn't take a genius to see that making one navigation bar
+template and using it in all of your pages is easier to manage than
+hard-coding it every where.  If you build your whole site like this,
+it's much easier to make site-wide changes in the look and feel.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Reusability"></a><a href="#toc_Reusability">Reusability</a></h2>
+
+<p>Along the same lines, building a set of commonly used components makes
+it easier to create new pages.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Better_Isolation_from_Changes"></a><a href="#toc_Better_Isolation_from_Changes">Better Isolation from Changes</a></h2>
+
+<p>Which one changes more often, the logic of your application or the
+HTML used to display it?  It actually doesn't matter which you
+answered, as long as it's one of them.  Templates can be a great
+abstraction layer between the application logic and the display logic,
+allowing one to be updated without touching the other.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Division_of_Labor"></a><a href="#toc_Division_of_Labor">Division of Labor</a></h2>
+
+<p>Separating your Perl code from your HTML means that when your
+marketing department decides everything should be green instead of
+blue, you don't have to lift a finger.  Just send them to the HTML
+coder down the hall.  It's a beautiful thing, getting out of the HTML
+business.</p>
+<p>Even if the same people in your organization write the Perl code and
+the HTML, you at last have the opportunity for more people to be
+working on the project in parallel.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="What_Are_the_Differences_"></a><a href="#toc_What_Are_the_Differences_">What Are the Differences?</a></h1>
+
+<p>Before we look at the available options, let's go through an
+explanation of some of the things that make them different.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Execution_Models"></a><a href="#toc_Execution_Models">Execution Models</a></h2>
+
+<p>Although some try to be flexible about it, most templating systems
+expect you to use some variation of the two basic execution models,
+which I will refer to as "pipeline" and "callback."  In the callback
+style, you let the template take over and it has the application's
+control flow coded into it.  It uses callbacks to modules or snippets
+of in-line Perl code to retrieve data for display or perform actions
+like user authentication.  Some popular examples of systems using this
+model include Mason, Embperl, and Apache::ASP.</p>
+<p>The pipeline style does all the work up front in a standard CGI or
+mod_perl handler, then decides which template to run and passes some
+data to it.  The template has no control flow logic in it, just
+presentation logic, e.g. show this graphic if this item is on sale.
+Popular systems supporting this approach include HTML::Template and
+Template Toolkit.</p>
+<p>The callback model works very well for publishing-oriented sites where
+the pages are essentially mix and match sets of articles and lists.
+Ideally, a site can be broken down into visual "components" or pieces
+of pages which are general enough for an HTML coder to re-combine them
+into entirely new kinds of pages without any help from a programmer.</p>
+<p>The callback model can get a bit hairy when you have to code logic
+that can result in totally different content being returned.  For
+example, if you have a system that processes some form input and takes
+the user to different pages depending on the data submitted.  In these
+situations, it's easy to end up coding a spaghetti of includes and
+redirects, or putting what are really multiple pages in the same file.</p>
+<p>On the other hand, a callback approach can result in fewer files (if
+the Perl code is in the HTML file), and feels easier and more
+intuitive to many developers.  It's a simple step from static files to
+static files with a few in-line snippets of code in them.  This is part
+of why PHP is so popular with new developers.</p>
+<p>The pipeline model is more like a traditional model-view-controller
+design.  Working this way can provide additional performance tuning
+opportunities over an approach where you don't know what data will be
+needed at the beginning of the request.  You can aggregate database
+queries, make smarter choices about caching, etc.  It can also promote
+a cleaner separation of application logic and presentation.  However,
+this approach takes longer to get started with since it's a bigger
+conceptual hurdle and always involves at least two files: one for the
+Perl code and one for the template.</p>
+<p>Keep in mind, many systems offer significant flexibility for
+customizing their execution models.  For example, Mason users could
+write separate components for application logic and display, letting
+the logic components choose which display component to run after
+fetching their data.  This allows it to be used in a pipeline style.
+A Template Toolkit application could be written to use a simple
+generic handler (like the Apache::Template module included in the
+distribution) with all the application logic placed in the template
+using object calls or in-line Perl.  This would be using it in a
+callback style.</p>
+<p>HTML::Template is fairly rigid
+about insisting on a pipeline approach.  It doesn't provide methods for
+calling back into Perl code during the HTML formatting stage; you have
+to do the work before running the template.  The author of the
+module consider this a feature since it prevents developers from
+cheating on the separation of application code and presentation.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Languages"></a><a href="#toc_Languages">Languages</a></h2>
+
+<p>Here's the big issue with templating systems.  This is the one that
+always cranks up the flame on web development mailing lists.</p>
+<p>Some systems use in-line Perl statements.  They may provide some extra
+semantics, like Embperl's operators for specifying whether the code's
+output should be displayed or Mason's <code>&lt;%init&gt;</code> sections for specifying
+when the code gets run, but at the end of the day your templates are
+written in Perl.</p>
+<p>Other systems provide a specialized mini-language instead of (or in
+addition to) in-line Perl.  These will typically have just enough
+syntax to handle variable substitution, conditionals, and looping.
+HTML::Template and Template Toolkit are popular systems using this
+approach.</p>
+<p>Here's how a typical discussion of the merits of these approaches might go:</p>
+<p><b>IN-LINE:</b> Mini-languages are stupid.  I already know Perl and it's easy
+enough.  Why would you want to use something different?</p>
+<p><b>MINI-LANG:</b> Because my HTML coder doesn't know Perl, and this is easier
+for him.</p>
+<p><b>IN-LINE:</b> Maybe he should learn some Perl.  He'd get paid more.</p>
+<p><b>MINI-LANG:</b> Whatever.  You just want to use in-line Perl so you can
+handle change requests by putting little hacks in the template instead
+of changing your modules.  That's sloppy coding.</p>
+<p><b>IN-LINE:</b> That's efficient coding.  I can knock out data editing
+screens in half the time it takes you, and then I can go back through,
+putting all the in-line code into modules and just have the templates
+call them.</p>
+<p><b>MINI-LANG:</b> You could, but you won't.</p>
+<p><b>IN-LINE:</b> Is it chilly up there in that ivory tower?</p>
+<p><b>MINI-LANG:</b> Go write some VBScript, weenie.</p>
+<p>etc.</p>
+<p>Most people pick a side in this war and stay there.  If you are one of
+the few who hasn't fully decided yet, you should take a moment to
+think about who will be building and maintaining your templates, what
+skills those people have, and what will allow them to work most
+efficiently.</p>
+<p>Here's an example of a simple chunk of template using first an in-line
+style (Apache::ASP in this case) and then a mini-language style
+(Template Toolkit).  This code fetches an object and displays some
+properties of it.  The data structures used are identical in both
+examples.  First Apache::ASP:</p>
+<pre class="pre-section">  &lt;% my $product = Product-&gt;load('sku' =&gt; 'bar1234'); %&gt;
+
+  &lt;% if ($product-&gt;isbn) { %&gt;
+    It's a book!
+  &lt;% } else { %&gt;
+    It's NOT a book!
+  &lt;% } %&gt;
+
+  &lt;% foreach my $item (@{$product-&gt;related}) { %&gt;
+    You might also enjoy &lt;% $item-&gt;name %&gt;.
+  &lt;% } %&gt;</pre>
+<p>And now Template Toolkit:</p>
+<pre class="pre-section">  [% USE product(sku=bar1234) %]
+ 
+  [% IF product.isbn %]
+    It's a book!
+  [% ELSE %]
+    It's NOT a book!
+  [% END %]
+
+  [% FOREACH item = product.related %]
+    You might also enjoy [% item.name %].
+  [% END %]</pre>
+<p>There is a third approach, based on parsing an HTML document into a
+DOM tree and then manipulating the contents of the nodes.  The only
+module using this approach is HTML_Tree.  The idea is similar to using
+a mini-language, but it doesn't require any non-standard HTML tags and
+it doesn't embed any logic about loops or conditionals in the template
+itself.  This is nice because it means your templates are valid HTML
+documents that can be viewed in a browser and worked with in most
+standard HTML tools.  It also means people working with the templates
+can put placeholder data in them for testing and it will simply be
+replaced when the template is used.  This preview ability only breaks
+down when you need an if/else type construct in the template.  In that
+situation, both the "if" and "else" chunks of HTML would show up when
+previewing.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Parsers_and_Caching"></a><a href="#toc_Parsers_and_Caching">Parsers and Caching</a></h2>
+
+<p>The parsers for these templating systems are implemented in one of
+three ways: they parse the template every time ("repeated parse"),
+they parse it and cache the resulting parse tree ("cached parse
+tree"), or they parse it, convert it to Perl code, and compile it
+("compiled").</p>
+<p>Systems that compile templates to Perl take advantage of Perl's
+powerful runtime code evaluation capabilities.  They examine the
+template, generate a chunk of Perl code from it, and <code>eval</code> the
+generated code.  After that, subsequent requests for the template can
+be handled by running the compiled bytecode in memory.  The complexity
+of the parsing and code generation steps varies based on the number of
+bells and whistles the system provides beyond straight in-line Perl
+statements.</p>
+<p>Compiling to Perl and then to Perl bytecode is slow on the first hit
+but provides excellent performance once the template has been
+compiled, since the template becomes a Perl subroutine call.  This is
+the same approach used by systems like JSP (Java ServerPages).  It is
+most effective in environments with a long-running Perl interpreter,
+like mod_perl.</p>
+<p>HTML::Template, HTML_Tree, and the 2.0 beta release of Embperl all use
+a cached parse tree approach.  They parse templates into their
+respective internal data structures and then keep the parsed structure
+for each processed template in memory.  This is similar to the
+compiled Perl approach in terms of performance and memory
+requirements, but does not actually involve Perl code generation and
+thus doesn't require an <code>eval</code> step.  Which way is faster, caching
+the parse tree or compiling?  It's hard to objectively measure, but
+anecdotal evidence seems to support compilation.  Template Toolkit
+used a cached parse tree approach for version 1, but switched to a
+compilation approach for version 2 after tests showed it to offer a
+significant speed increase.  However, as will be discussed later,
+either approach is more than fast enough.</p>
+<p>In contrast to this, a repeated parse approach may sound very slow.
+However, it can be pretty fast if the tokens being parsed for are
+simple enough.  Systems using this approach generally use very simple
+tokens, which allows them to use fast and simple parsers.</p>
+<p>Why would you ever use a system with this approach if compilation has
+better performance?  Well, in an environment without a persistent Perl
+interpreter like vanilla CGI this can actually be faster than a
+compiled approach since the startup cost is lower.  The caching of
+Perl bytecode done by compilation systems is useless when the Perl
+interpreter doesn't stick around for more than one request.</p>
+<p>There are other reasons too.  Compiled Perl code takes up a lot of
+memory.  If you have many unique templates, they can add up fast.
+Imagine how much RAM it would take up if every page that used
+server-side includes (SSI) had to stay in memory after it had been
+accessed.  (Don't worry, the <code>Apache::SSI</code> module doesn't use
+compilation so it doesn't have this problem.)</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Application_Frameworks_vs__Just_Templates"></a><a href="#toc_Application_Frameworks_vs__Just_Templates">Application Frameworks vs. Just Templates</a></h2>
+
+<p>Some of the templating tools try to offer a comprehensive solution to
+the problems of web development.  Others offer just a templating
+solution and assume you will fit this together with other modules to
+build a complete system.</p>
+<p>Some common features offered in the frameworks include:</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h3><a name="URL_Mapping"></a><a href="#toc_URL_Mapping">URL Mapping</a></h3>
+
+<p>All of the frameworks offer a way to map a URL to a template file.  In
+addition to simple mappings similar to the handling of static
+documents, some offer ways to intercept all requests within a certain
+directory for pre-processing, or create an object inheritance scheme
+out of the directory structure of a site.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h3><a name="Session_Tracking"></a><a href="#toc_Session_Tracking">Session Tracking</a></h3>
+
+<p>Most interactive sites need to use some kind of session tracking to
+associate application state data with a user.  Some tools make this
+very easy by handling all the cookies or URL-munging for you and
+letting you simply read and write from an object or hash that contains
+the current user's session data.  A common approach is to use the
+Apache::Session module for storage.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h3><a name="Output_Caching"></a><a href="#toc_Output_Caching">Output Caching</a></h3>
+
+<p>While caching of output is outside the scope of most templating systems, Mason
+includes it as a standard feature.  In addition to page-level caching, Mason also 
+offers fine-grained caching of output from sections within a page.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h3><a name="Form_Handling"></a><a href="#toc_Form_Handling">Form Handling</a></h3>
+
+<p>How will you live without CGI.pm to parse incoming form data?  Many of
+these tools will do it for you, making it available in a convenient
+data structure.  Some also validate form input, and even provide
+"sticky" form widgets that keep their selected values when
+re-displayed or set up default values based on data you provide.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h3><a name="Debugging"></a><a href="#toc_Debugging">Debugging</a></h3>
+
+<p>Everyone knows how painful it can be to debug a CGI script.
+Templating systems can make it worse, by screwing up Perl's line
+numbers with generated code.  To help fix the problem they've created,
+some offer built-in debugging support, including extra logging, or
+integration with the Perl debugger.</p>
+<p>If you want to use a system that just does templates but you need some
+of these other features and don't feel like implementing them
+yourself, there are some tools on CPAN which provide a framework you
+can build on.  The libservlet distribution, which provides an
+interface similar to the Java servlet API, is independent of any
+particular templating system.  Apache::PageKit and CGI::Application
+are other options in this vein, but both of these are currently tied
+to HTML::Template.  OpenInteract is another framework, this time tied
+to Template Toolkit.  All of these could be adapted for the "just
+templates" module of your choice with fairly minimal effort.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="The_Contenders"></a><a href="#toc_The_Contenders">The Contenders</a></h1>
+
+<p>Okay, now that you know something about what separates these tools
+from each other, let's take a look at the top choices for Perl
+templating systems.  This is not an exhaustive list: I've only
+included systems that are currently maintained, well-documented, and
+have managed to build up a significant user community.  In short, I've
+left out a dozen or so less popular systems.  At the end of this
+section, I'll mention a few systems that aren't as commonly used but
+may be worth a look.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="SSI"></a><a href="#toc_SSI">SSI</a></h2>
+
+<p>SSI is the granddaddy of templating systems, and the first one that
+many people used since it comes as a standard part of most web
+servers.  With mod_perl installed, mod_include gains some additional
+power.  Specifically, it is able to take a new <code>#perl</code> directive
+(though only if mod_perl is statically built) which allows for in-line
+subroutine calls.  It can also efficiently include the output of
+Apache::Registry scripts by using the Apache::Include module.</p>
+<p>The Apache::SSI module implements the functionality of mod_include
+entirely in Perl, including the additional <code>#perl</code> directive.  The
+main reasons to use it are to post-process the output of another
+handler (with Apache::Filter) or to add your own directives.  Adding
+directives is easy through subclassing.  You might be tempted to
+implement a complete template processor in this way, by adding loops
+and other constructs, but it's probably not worth the trouble with so
+many other tools out there.</p>
+<p>SSI follows the callback model and is mostly a mini-language, although
+you can sneak in bits of Perl code as anonymous subs in <code>#perl</code>
+directives.  Because SSI uses a repeated parse implementation, it is
+safe to use it on large numbers of files without worrying about memory
+bloat.</p>
+<p>SSI is a great choice for sites with fairly simple templating needs,
+especially ones that just want to share some standard headers and
+footers between pages.  However, you should consider whether or not
+your site will eventually need to grow into something with more
+flexibility and power before settling on this simple approach.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="HTML__Mason"></a><a href="#toc_HTML__Mason">HTML::Mason</a></h2>
+
+<p>Mason has been around for a few years now, and has built up a loyal
+following.  It was originally created as a Perl clone of some of the
+most interesting features from Vignette StoryServer, but has since
+become it's own unique animal.  It comes from a publishing background,
+and includes features oriented towards splitting up pages into
+re-useable chunks, or "components."</p>
+<p>Mason uses in-line Perl with a compilation approach, but has a feature
+to help keep the perl code out of the HTML coder's way.  Components
+(templates) can include a section of Perl at the end of the file which
+is wrapped inside a special tag indicating that it should be run
+first, before the rest of the template.  This allows programmers to
+put all the logic for a component down at the bottom away from the
+HTML, and then use short in-line Perl snippets in the HTML to insert
+values, loop through lists, etc.</p>
+<p>Mason is a site development framework, not just a templating tool.  It
+includes a very handy caching feature that can be used for capturing
+the output of components or simply storing data that is expensive to
+compute.  It is currently the only tool that offers this sort of
+caching as a built-in.  It also implements an argument parsing scheme
+which allows a component to specify the names, types, and default
+values that it expects to be passed, either from another component or
+from the values passed in the URI query string.</p>
+<p>While the documentation mostly demonstrates a callback execution
+model, it is possible to use Mason in a pipeline style.  This can be
+accomplished in various ways, including designating components as
+"autohandlers" which run before anything else for requests within a
+certain directory structure.  An autohandler could do some processing
+and set up data for a display template which only includes minimal
+in-line Perl.  There is also support for an object-oriented site
+approach, applying concepts like inheritance to the site directory
+structure.  For example, the component at /store/book/ might inherit a
+standard layout from the component at /store/, but override the
+background color and navigation bar.  Then /store/music/ can do the
+same, with a different color.  This can be a very powerful paradigm
+for developing large sites.</p>
+<p>Mason's approach to debugging is to create "debug files" which run
+Mason outside of a web server environment, providing a fake web
+request and activating the debugger.  This can be helpful if you're
+having trouble getting Apache::DB to behave under mod_perl, or using
+an execution environment that doesn't provide built-in debugger
+support.</p>
+<p>Another unique feature is the ability to leave the static text parts
+of a large template on disk, and pull them in with a file seek when
+needed rather than keeping them in RAM.  This exchanges some speed for
+a significant savings in memory when dealing with templates that are
+mostly static text.</p>
+<p>There are many other features in this package, including filtering of
+HTML output and a page previewing utility.  Session support is not
+built-in, but a simple example showing how to integrate with
+Apache::Session is included.  Mason's feature set can be a bit
+overwhelming for newbies, but the high-quality documentation and
+helpful user community go a long way.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="HTML__Embperl"></a><a href="#toc_HTML__Embperl">HTML::Embperl</a></h2>
+
+<p>Embperl makes its language choice known up front: embedded perl.  It
+is one of the most popular in-line Perl templating tools and has been
+around longer than most of the others.  It has a solid reputation for
+speed and ease of use.</p>
+<p>It is commonly used in a callback style, with Embperl intercepting
+URIs and processing the requested file.  However, it can optionally be
+invoked through a subroutine call from another program, allowing it to
+be used in a pipeline style.  Templates are compiled to Perl bytecode
+and cached.</p>
+<p>Embperl has been around long enough to build up an impressive list of
+features.  It has the ability to run code inside a Safe compartment,
+support for automatically cleaning up globals to make mod_perl coding
+easier, and extensive debugging tools including the ability to e-mail
+errors to an administrator.</p>
+<p>The main thing that sets Embperl apart from other in-line Perl systems
+is its tight HTML integration.  It can recognize <code>TABLE</code> tags and
+automatically iterate over them for the length of an array.  It
+automatically provides sticky form widgets.  An array or hash
+reference placed at the end of a query string in an <code>HREF</code> or <code>SRC</code>
+attribute will be automatically expanded into query string
+"name=value" format.  <code>META HTTP-EQUIV</code> tags are turned into true HTTP
+headers.</p>
+<p>Another reason people like Embperl is that it makes some of the common
+tasks of web application coding so simple.  For example, all form data
+is always available just by reading the magic variable %fdat.
+Sessions are supported just as easily, by reading and writing to the
+magic %udat hash.  There is also a hash for storing persistent
+application state.  HTML-escaping is automatic (though it can be
+toggled on and off).</p>
+<p>Embperl includes something called EmbperlObject, which allows you to
+apply OO concepts to your site hierarchy in a similar way to the
+inheritance features mentioned for Mason, above.  This is a very
+convenient way to code sites with styles that vary by area, and is
+worth checking out.</p>
+<p>One drawback of older versions of Embperl was the necessity to use
+built-in replacements for most of Perl's control structures like "if"
+and "foreach" when they are being wrapped around non-Perl sections.
+For example:</p>
+<pre class="pre-section">  [$ if ($foo) $]
+    Looks like a foo!
+  [$ else $]
+    Nope, it's a bar.
+  [$ endif $]</pre>
+<p>These may seem out of place in a system based around in-line Perl.  As
+of version 1.2b2, it is possible to use Perl's standard syntax instead:</p>
+<pre class="pre-section">  [$ if ($foo) { $]
+    Looks like a foo!
+  [$ } else { $]
+    Nope, it's a bar.
+  [$ } $]</pre>
+<p>At the time of this writing, a new 2.x branch of Embperl is in beta
+testing.  This includes some interesting features like a more flexible
+parsing scheme which can be modified to users' tastes.  it also
+supports direct use of the Perl debugger on Embperl templates, and
+provides performance improvements.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Apache__ASP"></a><a href="#toc_Apache__ASP">Apache::ASP</a></h2>
+
+<p>Apache::ASP started out as a port of Microsoft's Active Server Pages
+technology, and its basic design still follows that model.  It uses
+in-line Perl with a compilation approach, and provides a set of simple
+objects for accessing the request information and formulating a
+response.  Scripts written for Microsoft's ASP using Perl (via
+ActiveState's PerlScript) can usually be run on this system without
+changes.  (Pages written in VBScript are not supported.)</p>
+<p>Like the original ASP, it has hooks for calling specified code when
+certain events are triggered, such as the start of a new user session.
+It also provides the same easy-to-use state and session management.
+Storing and retrieving state data for a whole application or a
+specific user is as simple as a single method call.  It can even
+support user sessions without cookies by munging URLs -- a unique
+feature among these systems.</p>
+<p>A significant addition that did not come from Microsoft ASP is the XML
+and XSLT support.  There are two options provided: XMLSubs and XSLT
+transforms.  XMLSubs is a way of adding custom tags to your pages.  It
+maps XML tags to your subroutines, so that you can add something like
+<code>&lt;site:header page="Page Title" /&gt;</code> to your pages and have it
+translate into a subroutine call like <code>&amp;site::header({title =&gt;
+"Page Title"})</code>.  It can handle processing XML tags with body text as
+well.</p>
+<p>The XSLT support allows the output of ASP scripts to be filtered
+through XSLT for presentation.  This allows your ASP scripts to
+generate XML data and then format that data with a separate XSL
+stylesheet.  This support is provided through integration with the
+XML::XSLT module.</p>
+<p>Apache::ASP provides sticky widgets for forms through the use of the
+HTML::FillInForm module.  It also has built-in support for removing
+extra whitespace from generated output, gzip compressing output (for
+browsers that support it), tracking performance using Time::HiRes,
+automatically mailing error messages to an administrator, and many
+other conveniences and tuning options.  This is a mature package which
+has evolved to handle real-world problems.</p>
+<p>One thing to note about the session and state management in this
+system is that it currently only supports clusters through the use of
+network filesystems like NFS or SMB.  (Joshua Chamas, the module's
+author, has reported much better results from Samba file-sharing than
+from NFS.)  This may be an issue for large-scale server clusters,
+which usually rely on a relational database for network storage of
+sessions.  Support database storage of sessions is planned for a
+future release.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Text__Template"></a><a href="#toc_Text__Template">Text::Template</a></h2>
+
+<p>This module has become the de facto standard general purpose
+templating module on CPAN.  It has an easy interface and thorough
+documentation.  The examples in the docs show a pipeline execution
+style, but it's easy to write a mod_perl handler that directly invokes
+templates, allowing a callback style.  The module uses in-line Perl.
+It has the ability to run the in-line code in a Safe compartment, in
+case you are concerned about mistakes in the code crashing your
+server.</p>
+<p>The module relies on creative uses of in-line code to provide things
+that people usually expect from templating tools, like includes.  This
+can be good or bad.  For example, to include a file you could just
+call Text::Template::fill_in_file(filename).  However, you'll have to
+specify the complete file path and nothing will stop you from using
+/etc/passwd as the file to be included.  Most of the fancier
+templating tools have concepts like include paths, which allow you to
+specify a list of directories to search for included files.  You could
+write a subroutine that works this way, and make it available in your
+template's namespace, but it's not built in.</p>
+<p>Each template is loaded as a separate object.  Templates are compiled
+to Perl and only parsed the first time they are used.  However, to
+take full advantage of this caching in a persistent environment like
+mod_perl, your program will have to keep track of which templates have
+been used, since Text::Template does not have a way of globally
+tracking this and returning cached templates when possible.</p>
+<p>Text::Template is not tied to HTML, and is just a templating module,
+not a web application framework.  It is perfectly at home generating
+e-mails, PDFs, etc.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Template_Toolkit"></a><a href="#toc_Template_Toolkit">Template Toolkit</a></h2>
+
+<p>One of the more recent additions to the templating scene, Template
+Toolkit is a very flexible mini-language system.  It has a complete
+set of directives for working with data, including loops and
+conditionals, and it can be extended in a number of ways.  In-line
+Perl code can be enabled with a configuration option, but is generally
+discouraged.  It uses compilation, caching the compiled bytecode in
+memory and optionally caching the generated Perl code for templates on
+disk.  Although it is commonly used in a pipeline style, the included
+Apache::Template module allows templates to be invoked directly from
+URLs.</p>
+<p>Template Toolkit has a large feature set, so we'll only be able cover
+some of the highlights here.  The TT distribution sets a gold standard
+for documentation thoroughness and quality, so it's easy to learn more
+if you choose to.</p>
+<p>One major difference between TT and other systems is that it provides
+simple access to complex data structures through the concept of a dot
+operator.  This allows people who don't know Perl to access nested
+lists and hashes or call object methods.  For example, we could pass
+in this Perl data structure:</p>
+<pre class="pre-section">  $vars = {
+           customer =&gt; {
+                        name    =&gt; 'Bubbles',
+                        address =&gt; {
+                                    city =&gt; 'Townsville',
+                                   }
+                       }
+          };</pre>
+<p>Then we can refer to the nested data in the template:</p>
+<pre class="pre-section">  Hi there, [% customer.name %]!
+  How are things in [% customer.address.city %]?</pre>
+<p>This is simpler and more uniform than the equivalent syntax in Perl.
+If we pass in an object as part of the data structure, we can use the
+same notation to call methods within that object.  If you've modeled
+your system's data as a set of objects, this can be very convenient.</p>
+<p>Templates can define macros and include other templates, and
+parameters can be passed to either.  Included templates can optionally
+localize their variables so that changes made while the included
+template is executing do not affect the values of variables in the
+larger scope.</p>
+<p>There is a filter directive, which can be used for post-processing
+output.  Uses for this range from simple HTML entity conversion to
+automatic truncation (useful for pulldown menus when you want to limit
+the size of entries) and printing to STDERR.</p>
+<p>TT supports a plugin API, which can be used to add extra capabilities
+to your templates.  The provided plugins can be broadly organized into
+data access and formatting.  Standard data access plugins include
+modules for accessing XML data or a DBI data source and using that
+data within your template.  There's a plugin for access to CGI.pm as
+well.</p>
+<p>Formatting plugins allow you to display things like dates and prices
+in a localized style.  There's also a table plugin for use in
+displaying lists in a multi-column format.  These formatting plugins
+do a good job of covering the final 5% of data display problems that
+often cause people who are using an in-house system to embed a little
+bit of HTML in their Perl modules.</p>
+<p>In a similar vein, TT includes some nice convenience features for
+template writers like eliminating white space around tags and the
+ability to change the tag delimiters -- things that may sound a little
+esoteric, but can sometimes make templates significantly easier to
+work with.</p>
+<p>The TT distribution also includes a script called ttree which allows
+for processing an entire directory tree of templates.  This is useful
+for sites that pre-publish their templated pages and serve them
+statically.  The script checks modification times and only updates
+pages that require it, providing a make-like functionality.  The
+distribution also includes a sample set of template-driven HTML
+widgets which can be used to give a consistent look and feel to a
+collection of documents.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="HTML__Template"></a><a href="#toc_HTML__Template">HTML::Template</a></h2>
+
+<p>HTML::Template is a popular module among those looking to use a
+mini-language rather than in-line Perl.  It uses a simple set of tags
+which allow looping (even on nested data structures) and conditionals
+in addition to basic value insertion.  The tags are intentionally
+styled to look like HTML tags, which may be useful for some
+situations.</p>
+<p>As the documentation says, it "does just one thing and it does quickly
+and carefully" -- there is no attempt to add application features like
+form-handling or session tracking.  The module follows a pipeline
+execution style.  Parsed templates are stored in a Perl data structure
+which can be cached in any combination of memory, shared memory (using
+IPC::SharedCache), and disk.  The documentation is complete and
+well-written, with plenty of examples.</p>
+<p>You may be wondering how this module is different from Template
+Toolkit, the other popular mini-language system.  Beyond the obvious
+differences in syntax, HTML::Template is faster and simpler, while
+Template Toolkit has more advanced features, like plugins and dot
+notation.  Here's a simple example comparing the syntax:</p>
+<p>HTML::Template:</p>
+<pre class="pre-section">  &lt;TMPL_LOOP list&gt;
+      &lt;a href="&lt;TMPL_VAR url&gt;"&gt;&lt;b&gt;&lt;TMPL_VAR name&gt;&lt;/b&gt;&lt;/a&gt;
+  &lt;/TMPL_LOOP&gt;</pre>
+<p>Template Toolkit:</p>
+<pre class="pre-section">  [% FOREACH list %]
+      &lt;a href="[% url %]"&gt;&lt;b&gt;[% name %]&lt;/b&gt;&lt;/a&gt;
+  [% END %]</pre>
+<p>And now, a few honorable mentions:</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="AxKit2"></a><a href="#toc_AxKit2">AxKit2</a></h2>
+
+<p>Previous versions of this document covered Apache::AxKit.  However, the coverage
+was not very good and that project has since been replaced by AxKit2.</p>
+<p>Like its predecessor, AxKit2 is all about XML.  It is more of a framework than a
+templating system per se, but includes support for multiple templating systems
+within it.  The systems supported in the core release include XSLT, TAL (see
+the notes on Petal and Template::TAL below), XSP, an XML-based mini-language
+which can be extended with your own tags, and facilities for writing custom tag
+libraries.</p>
+<p>Rather than short-change AxKit2 here with an inadequate description, I would
+encourage people who are intrigued by what they've heard so far to go and check
+out AxKit2 on CPAN.  If you like working with XML, this may be a very good fit
+for you.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="HTML_Tree"></a><a href="#toc_HTML_Tree">HTML_Tree</a></h2>
+
+<p>As mentioned earlier, HTML Tree uses a fairly unique method of
+templating: it loads in an HTML page, parses it to a DOM, and then
+programmatically modifies the contents of nodes.  This allows it to
+use genuine valid HTML documents as templates, something which none of
+these other modules can do.  The learning curve is a little steeper
+than average, but this may be just the thing if you are concerned
+about keeping things simple for your HTML coders.  Unfortunately, HTML_Tree
+seems to be a dead project at this point and has not had an update in years.
+(Note that the name is "HTML_Tree", not "HTML::Tree".)</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="Petal_and_Template__TAL"></a><a href="#toc_Petal_and_Template__TAL">Petal and Template::TAL</a></h2>
+
+<p>Both of these modules are based on the TAL templating language created by the
+developers of the (Python) Zope CMS.  (Petal offers some additions, while
+Template::TAL tries to be a strict implementation of the TAL spec.)  The
+basic idea is to make your templates XML documents and use attributes in a TAL
+namepace to specify data, loops, and conditionals.  This means it is essentially
+using a mini-language, but the templates end up being valid XML documents, which
+allows them to be edited with XML tools.</p>
+<p>There are a couple of downsides to TAL.  One is the verbosity.  Compared to most
+of the other tools listed here, TAL is very verbose.  This is a consequence of
+using XML attributes for everything.  Here's an example from the Template::TAL
+docs:</p>
+<pre class="pre-section">  &lt;li tal:repeat="user users"&gt;
+    &lt;a href="?" tal:attributes="href user/url"&gt;&lt;span tal:replace="user/name"/&gt;&lt;/a&gt;
+  &lt;/li&gt;</pre>
+<p>The other issue is the need for your templates to be valid XML (most likely
+XHTML).  Petal attempts to be more forgiving by implementing a custom parser and
+allowing XHTML and HTML.  This should allow the use of WYSIWYG tools to edit
+templates.  In practice though, the custom parser is easily confused by HTML that
+browsers would handle without a problem.  A custom parser is also problematic from
+a maintenance perspective since it doesn't benefit from improvements in the
+commonly used XML parsers.  Template::TAL uses XML::LibXML.</p>
+<p>Both Petal and Template::TAL have seen relatively recent maintenance releases,
+which makes them a much safer bet than HTML_Tree at this point.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="ePerl"></a><a href="#toc_ePerl">ePerl</a></h2>
+
+<p>Possibly the first module to embed Perl code in a text or HTML file,
+ePerl is getting a bit long in the tooth.  The mod_perl-aware version, 
+Apache::ePerl, caches compiled bytecode in memory to achieve solid 
+performance, and some people find it refreshingly simple to use. However, 
+it lacks many of the features that the other more modern systems have, 
+and may be difficult to compile on recent versions of Perl.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="CGI__FastTemplate"></a><a href="#toc_CGI__FastTemplate">CGI::FastTemplate</a></h2>
+
+<p>This module takes a minimalistic approach to templating, which makes
+it unusually well suited to use in CGI programs.  It parses templates
+with a single regular expression and does not support anything in
+templates beyond simple variable interpolation.  Loops are handled by
+including the output of other templates.  Unfortunately, this leads to
+a Perl coding style that is more confusing than most, and a
+proliferation of template files.  However, some people swear by this
+dirt-simple approach.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Performance"></a><a href="#toc_Performance">Performance</a></h1>
+
+<p>People always seem to worry about the performance of templating
+systems.  If you've ever built a large-scale application, you should
+have enough perspective on the relative costs of different actions to
+know that your templating system is not the first place to look for
+performance gains.  All of the systems mentioned here have excellent
+performance characteristics in persistent execution environments like
+mod_perl.  Compared to such glacially slow operations as fetching data
+from a database or file, the time added by the templating system is
+almost negligible.</p>
+<p>If you think your templating system is slowing you down, get the
+facts: pull out Devel::DProf and see.  If one of the tools mentioned
+here is at the top of the list for wall clock time used, you should
+pat yourself on the back -- you've done a great job tuning your system
+and removing bottlenecks!  Personally, I have only seen this happen
+when I had managed to successfully cache nearly every part of the work
+to handle a request except running a template.</p>
+<p>However, if you really are in a situation where you need to squeeze a
+few extra microseconds out of your page generation time, there are
+performance differences between systems.  They're pretty much what you
+would expect: systems that do the least run the fastest.  Using
+in-line print() statements is faster than using templates.  Using
+simple substitution is faster than using in-line Perl code.  Using
+in-line Perl code is faster than using a mini-language.</p>
+<p>The only templating benchmark available at this time is one developed
+by Joshua Chamas, author of Apache::ASP.  It includes a "hello world"
+test, which simply checks how fast each system can spit back those
+famous words, and a "hello 2000" test, which exercises the basic
+functions used in most dynamic pages.  It is available from the
+following URL:</p>
+<p><a href="http://www.chamas.com/bench/hello.tar.gz">http://www.chamas.com/bench/hello.tar.gz</a></p>
+<p>Results from this benchmark currently show SSI, Apache::ASP, and
+HTML::Embperl having the best performance of the lot.  Not all of the
+systems mentioned here are currently included in the test.  If your
+favorite was missed, you might want to download the benchmark code and
+add it.  As you can well imagine, benchmarking people's pet projects
+is largely a thankless task and Joshua deserves some recognition and
+support for this contribution to the community.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h2><a name="CGI_Performance_Concerns"></a><a href="#toc_CGI_Performance_Concerns">CGI Performance Concerns</a></h2>
+
+<p>If you're running under CGI, you have bigger fish to fry than worrying
+about the performance of your templating system.  Nevertheless, some
+people are stuck with CGI but still want to use a templating system
+with reasonable performance.  CGI is a tricky situation, since you
+have to worry about how much time it will take for Perl to compile the
+code for a large templating system on each request.  CGI also breaks
+the in-memory caching of templates used by most of these systems,
+although the slower disk-based caching provided by Mason,
+HTML::Template, and Template Toolkit will still work.  (HTML::Template
+does provide a shared memory cache for templates, which may improve
+performance, although shared memory on my Linux system is usually
+slower than using the filesystem.  Benchmarks and additional
+information are welcome.)</p>
+<p>Your best performance bet with CGI is to use one of the simpler tools,
+like CGI::FastTemplate or Text::Template.  They are small and compile
+quickly, and CGI::FastTemplate gets an extra boost since it relies on
+simple regex parsing and doesn't need to eval any in-line Perl code.
+Almost everything else mentioned here will add tenths of seconds to
+each page in compilation time alone.</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Updates"></a><a href="#toc_Updates">Updates</a></h1>
+
+<p>These modules are moving targets, and a document like this is bound to
+contain some mistakes.  Send your corrections to &lt;perrin (at) elem.com&gt;.
+Future versions of this document will be announced on the mod_perl
+mailing list, and possibly other popular Perl locations as well.</p>
+<p>by Perrin Harkins</p>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Maintainers"></a><a href="#toc_Maintainers">Maintainers</a></h1>
+
+<p>Maintainer is the person(s) you should contact with updates,
+corrections and patches.</p>
+<ul>
+<li>
+<p>Perrin Harkins &lt;perrin (at) elem.com&gt;.</p>
+</li>
+</ul>
+<br><br>
+<a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a>    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <div class="index-section">
+    <!-- SwishCommand index -->
+    <h1><a name="Authors"></a><a href="#toc_Authors">Authors</a></h1>
+
+<ul>
+<li>
+<p>Perrin Harkins &lt;perrin (at) elem.com&gt;.</p>
+</li>
+</ul>
+<p>Only the major authors are listed above. For contributors see the
+Changes file.</p>
+<br><br>
+    
+    <br><br>
+    <!-- SwishCommand noindex -->
+    </div>
+    <!-- content end -->
+
+</div>
+<!-- right box end -->
+   <table width="100%" border="0" cellspacing="0" cellpadding="0" class="noPrint">
+       <tr>
+           <!-- this height must be 1px more than the highest gif ns6/mac -->
+           <td width="195" nowrap height="17">
+               <table width="195" border="0" cellspacing="0" cellpadding="0">
+                   <tr>
+                       <td><img src="../../../../images/trans_pix.gif"></a></td>
+                   </tr>
+               </table>
+            </td>
+           <td width="1"><br></td>
+           <td align="left" nowrap><a href="#top" class="noPrint"><img src="../../../../images/nav/page_top.gif" width="48" height="16" border="0" alt="TOP"></a></td>
+           <td width="100%"><br></td>
+           <td align="right" nowrap><a href="../../apps/scale_etoys/etoys.html"><img src="../../../../images/nav/page_prev.gif" alt="previous page: Building a Large-Scale E-commerce site with Apache and mod_perl" border="0" width="48" height="16"></a><a href="../../index.html"><img src="../../../../images/nav/page_parent.gif" alt="page up: Tutorials" border="0" height="16" width="25"></a><a href="../../tips/mod_perl_tricks/mod_perl_tricks.html"><img src="../../../../images/nav/page_next.gif" alt="next page: Cute Tricks With Perl and Apache" border="0" width="48" height="16"></a></td>
+           <td width="1"><br></td>
+        </tr>
+    </table>
+        <div class="footer noPrint">
+            <hr noshade size="1">
+            <!-- footer (tail )-->
+            <p class="modified">Last modified Sat Feb 15 17:38:39 2014</p>
+            <div class="changes"><a href="../../Changes.html"><img src="../../../../images/nav/page_changes.gif" width="60" height="16" border="0" alt="Changes file"></a>
+<br><br>
+</div>
+            <p class="modified">Have comments? Please send them to 
+            <a href="../../../../maillist/modperl.html">the 
+            modperl users mailing list</a>.</p>
+            <p class="copyright">Use of the Camel for Perl is a trademark of
+                <a href="http://www.oreilly.com/">O'Reilly &amp; Associates</a>, 
+                and is used by permission.
+            </p>
+            <!-- end footer (tail)-->
+            <br><br>
+        </div>
+
+</body>
+</html>

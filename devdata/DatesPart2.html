@@ -1,0 +1,610 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>A Date with CPAN, Part 2: Target First, Aim Afterwards | Buddy Burden [blogs.perl.org]</title>
+    <meta name="generator" content="Movable Type Pro 4.38" />
+    
+
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+    <link href="http://blogs.perl.org/users/buddy_burden/styles/reset.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/users/buddy_burden/styles/base.css" rel="stylesheet" type="text/css" />
+    <link href="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.css" rel="stylesheet" type="text/css" />
+    <link rel="alternate" type="application/atom+xml" title="Entries" href="http://blogs.perl.org/users/buddy_burden/atom.xml" />
+
+    <link rel="start" href="http://blogs.perl.org/users/buddy_burden/" title="Home" />
+    <script type="text/javascript" src="http://blogs.perl.org/users/buddy_burden/mt.js"></script>
+    <script type="text/javascript" src="http://blogs.perl.org/mt/mt-static/plugins/GCPrettify/prettify.js"></script>
+    <script type="text/javascript">mtAttachEvent('load', prettyPrint);</script>
+    
+    
+
+
+    
+    <link rel="prev bookmark" href="http://blogs.perl.org/users/buddy_burden/2015/09/a-date-with-cpan-part-1-state-of-the-union.html" title="A Date with CPAN, Part 1: State of the Union" />
+    <link rel="next bookmark" href="http://blogs.perl.org/users/buddy_burden/2015/10/-a-date-with-cpan-part-3-paving-while-driving.html" title="A Date with CPAN, Part 3: Paving While Driving" />
+    
+    
+
+</head>
+<body class="">
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56332-48']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <div id="container">
+    <div id="container-inner" class="pkg">
+        <div id="global-nav">
+        <div id="global-nav-inner">
+            <div id="global-nav-search">
+                <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    <input type="hidden" name="limit" value="20" />
+                    <label for="search">Search</label>
+                    <input id="global-search" class="query" name="search" value="Search blogs.perl.org" onfocus="cleanGlobalSearch();" />
+                    <input class="submit" type="submit" value="Go" />
+                </form>
+            </div><!-- #global-nav-search -->
+
+            <ul id="global-nav-links">
+                <li><a href="/">blogs.perl.org</a></li>
+                <li><a href="http://www.perl.org/">perl.org</a></li>
+                <li><a href="http://perlnews.org/">perlnews.org</a></li>
+                <li><a href="http://www.pm.org/">pm.org</a></li>
+		<li id="navbar-signin-widget">
+<span id="navbar-signin-widget-content" class="widget-content"></span>
+</li>
+<script type="text/javascript">
+/* <![CDATA[ */
+mtAttachEvent('usersignin', mtUpdateNavbarSignInWidget);
+mtUpdateNavbarSignInWidget();
+/* ]]> */
+</script>
+            </ul><!-- #global-nav-links -->
+        </div><!-- #global-nav-inner -->
+        </div><!-- #global-nav -->
+        
+
+
+        
+        <div id="header" class="pkg">
+        <div id="header-inner">
+            <h1 id="site-title"><a href="http://blogs.perl.org/users/buddy_burden/" accesskey="1">Buddy Burden</a></h1>
+            <div id="site-description">A blog about the Perl programming language</div>
+        </div><!-- #header-inner -->
+        </div><!-- #header -->
+        
+        <div id="content">
+        <div id="content-inner" class="pkg">
+            <div id="content-main">
+            
+
+
+<div class="entry" id="entry-7070">
+                        <h2 class="entry-title">A Date with CPAN, Part 2: Target First, Aim Afterwards</h2>
+                        
+                        <div class="entry-meta-1 pkg">
+                            <span class="byline">By <a href="http://blogs.perl.org/users/buddy_burden/" class="profile-link">Buddy Burden</a></span>
+							<span class="dateline">on <span class="date" title="iso8601">October  4, 2015  9:02 PM</span></span>
+							
+						</div><!-- .entry-meta -->
+                        
+                        <div class="entry-body">
+                            <p><small> <em>[This is a post in a new, probably long-ass, series.&nbsp; I do not promise that the next post in the series will be next week.&nbsp; Just that I will eventually finish it, someday.&nbsp; Unless I get hit by a bus.]</em> </small></p>
+
+<p><br />
+So, <a href="http://blogs.perl.org/users/buddy_burden/2015/09/a-date-with-cpan-part-1-state-of-the-union.html">last time</a> I laid out my dissatisfaction with existing date modules and described what I was looking for in a feature set out of a potential new module.&nbsp; Well, a feature set is a good thing to have, but it&rsquo;s a lower-level view.&nbsp; Let&rsquo;s take a step back and try to pin down exactly what need I want my date module to satisfy; that is, what niche am I hoping it it will fill?&nbsp; When you&rsquo;re looking for a date module to solve a particular problem, which problems will lead you to this one?<sup><small><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#note1">1</a></small></sup><br />
+</p>
+                            <p>First of all, let&rsquo;s be clear: there is no such thing as a perfect module.&nbsp; I don&rsquo;t imagine I&rsquo;m going to replace all of the modules I discussed last time&mdash; honestly, I&rsquo;m not even claiming I&rsquo;m going to replace <em>any</em> of them.&nbsp; They will each continue to have a place for certain classes of problems.&nbsp; I just think there is a class or two left without coverage, and those are the ones I want to concentrate on.</p>
+
+<p>My number one goal for a new module is, it should be a great choice for quick scripts.&nbsp; I&rsquo;m not talking about one-liners or Perl golfing here: just reasonably small, compact scripts such as we all write from time to time.<sup><small><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#note2">2</a></small></sup>&nbsp; Imagine if you could write some code like this:</p>
+
+<pre><code class="prettyprint">my $date = date(shift);
+my $logfile = path($logdir, today-&gt;strftime("%Y%m%d.log"));
+retrieve_data( from =&gt; $date, to =&gt; today );
+</code></pre>
+
+<p>(Not saying that&rsquo;s the exact syntax, but it should be in the right ballpark.)&nbsp; Wouldn&rsquo;t be that nice?&nbsp; Your user passes you a date, in any old format they like (as long as it&rsquo;s recognizable by either Date::Parse or Time::ParseDate, which covers a lot of ground), and you immediately turn that into something usable in strings or SQL queries or what-have-you.&nbsp; Quick and simple.</p>
+
+<p>As long as your date needs are pretty basic, this module should cover them.&nbsp; <em>Especially</em> if you don&rsquo;t have any need for the full datetime.&nbsp; An object will be provided, with nice accessors, and some simple date arithmetic.&nbsp; You should be able to use it for inflation of date columns in an ORM (e.g. DBIC) for most purposes.&nbsp; If you need storage and retrieval, it&rsquo;ll be epoch seconds.&nbsp; I want this module to be the first thing you reach for when you think dates, and only after your needs grow more complex do you think about migrating to something more full-featured.&nbsp; (And hopefully your upgrade path will be smooth in that scenario.)</p>
+
+<p>Now, as I say, I know I can&rsquo;t be everything to all people.&nbsp; Here are some examples where this proposed module would <strong>not</strong> be the right choice:<br />
+<ul><li >You need to deal with dates in the far past (or far future).&nbsp; My preliminary poking around indicates I should be able to handle dates from 1-Jan-1000 to 31-Dec-2899, which is a pretty big range.&nbsp; But there&rsquo;s still a lot of time outside that range.</li><li >You have hardware and/or OS constraints.&nbsp; My poking around has all been in environments where epoch seconds are stored as signed 64-bit ints.&nbsp; If you&rsquo;re stuck with 32-bit ints, I&rsquo;m pretty sure your range is going to be much smaller&mdash; should be 13-Dec-1901 to 18-Jan-2038&mdash; which makes it far more likely that you&rsquo;ll hit the limits.&nbsp; If your underlying <code class="prettyprint">time_t</code> is <em>unsigned</em>, that may pose even bigger problems for you, as you theoretically wouldn&rsquo;t be able to represent dates prior to 1970.&nbsp; But I don&rsquo;t know if that&rsquo;s a situation that still exists in the wild.&nbsp; Additionally, I don&rsquo;t know if Perl makes some attempts to work around these problems if it finds them (thus my overcautious use of &ldquo;may&rdquo; and &ldquo;theoretically&rdquo; and whatnot).<sup><small><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#note3">3</a></small></sup></li><li >You need support for arbitrary timezones.&nbsp; One great example of this<sup><small><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#note4">4</a></small></sup> would be web server code which has to offer the user a choice of timezones and then display datetimes in whatever they pick.&nbsp; That&rsquo;s fairly common, granted.&nbsp; But I think there will be plenty of uses for this module outside that.</li><li >You need sophisticated localization/internationalization support.&nbsp; I&rsquo;m hoping that a future version of this module will be able to handle a minimum amount of this sort of thing, such as being able to parse a date with day names or month names in languages other than English.&nbsp; But it will never be the forte of this module.</li></ul><br />
+There will undoubtedly be other scenarios that this little module won&rsquo;t be feature-rich enough to handle.&nbsp; Let&rsquo;s face it, in all probability:<br />
+<ul><li >DateTime will always have cooler extensions and add-on modules.</li><li >Time::Moment will always be faster.</li><li >Time::Piece will always be in core, and my module won&rsquo;t.</li></ul><br />
+What my module <strong>will</strong> have to offer (assuming I&rsquo;m successful in my design goals):<br />
+<ul><li >Simple, clean syntax.</li><li >Take pretty much any string you throw at it and return a date.</li><li >Deal with dates and datetimes separately.</li><li >Won&rsquo;t eat too much RAM.</li><li >Not too slow.</li></ul>And that&rsquo;s roughly in order of importance for me as well.</p>
+
+<p>Okay, now that I know <em>what</em> I want to achieve, maybe I better figure out <em>how</em> I&rsquo;m going to do it.</p>
+
+<p>So let&rsquo;s return to the nine points in my desired feature set (from our last post):<br />
+<ul><li ><strong>Speed:</strong> It needs to be moderately fast.</li><li ><strong>Size:</strong> It needs to be moderately compact.</li><li ><strong>Stability:</strong> People need to have confidence in it.</li><li ><strong>Functionality:</strong> It needs to be able to fulfill your common date needs.</li><li ><strong>Immutability:</strong> The value of a date shouldn&rsquo;t change.</li><li ><strong>Truncation:</strong> I want to be able to deal with a date without having to worry about a time (at least sometimes).</li><li ><strong>Conversion:</strong> I want to be able to convert an <em>arbitrary</em> human-readable string to a date.</li><li ><strong>Implementation:</strong> The internal storage of the date should make it easy to convert to other modules.</li><li ><strong>Interface:</strong> The interface offered by the module should make it easy to do the most common things.</li></ul><br />
+I&rsquo;m not going to tackle those in the order I laid them out though.&nbsp; Let&rsquo;s start with the hardest ones first, since they&rsquo;re going to impose the biggest design constraints.</p>
+
+<p><strong>Stability</strong>  This is the absolute toughest one to achieve.&nbsp; If I write something from scratch, it will be brand new, inherently untested (at least from a real-world perspective), and people won&rsquo;t be able to trust it.&nbsp; I don&rsquo;t want that.&nbsp; I want folks to feel good about reaching for my module: it&rsquo;s no good being easy if you can&rsquo;t trust it to be <em>correct</em>.</p>
+
+<p>There&rsquo;s really only one option here: I need to choose one of the other modules to use as a base class.&nbsp; My module needs to be a fairly thin wrapper around that.&nbsp; If I keep my code simple, people can review it quickly, be satisfied that I&rsquo;m not screwing anything up in the underlying functionality, and then I can coast on the stability of the better-known module.</p>
+
+<p>So which module I choose is important.&nbsp; Many of the options I discussed last time have very good stability.&nbsp; But what about the other features I want?&nbsp; Well, if the one I choose has good <strong>Speed</strong> and <strong>Size</strong>, then all I have to do is make sure I don&rsquo;t slow it down too much or add too much code bloat.&nbsp; I&rsquo;ll want to be careful that I only load things on demand: if you never try to parse a date from a string, you shouldn&rsquo;t have to pay for the memory cost of Date::Parse or Time::ParseDate.&nbsp; Additionally, if I pick a module with a good <strong>Implementation</strong>, then I get that for free too.</p>
+
+<p>The choice is clear here: Time::Piece.&nbsp; It&rsquo;s already an object, so it&rsquo;s trivial to subclass.&nbsp; Its internal storage is epoch seconds, which is exactly what I want for my own storage.&nbsp; And it&rsquo;s reasonably fast and reasonably light, so as long as I don&rsquo;t go overboard and remain diligent about loading on demand, I should be good.&nbsp; Plus it&rsquo;s already got <strong>Immutability</strong>, so I don&rsquo;t need to worry about that, and most of the <strong>Functionality</strong> I want as well.&nbsp; The fact that it&rsquo;s in core and so doesn&rsquo;t add a non-core dependency is just gravy on the cake.<sup><small><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#note5">5</a></small></sup></p>
+
+<p>Since I liked the <strong>Interface</strong> of Date::Piece so much, I&rsquo;ll just steal it.&nbsp; Yay open source!&nbsp; I can crib some code, layer it on top of Time::Piece, and have the best of both worlds.&nbsp; For <strong>Conversion</strong>, I&rsquo;ve already identified that I want the functionality of Date::Parse and Time::ParseDate, so I&rsquo;ll just farm out that piece to those modules (loaded on demand, of course).&nbsp; That just leaves me with <strong>Truncation</strong>.</p>
+
+<p>And this is not so hard, really.&nbsp; I&rsquo;ll just make two different classes: one for dates, and one for datetimes.&nbsp; They can both still be descended from Time::Piece; one will just offer the guarantee that its time portion is <strong>always</strong> midnight and zero seconds.<sup><small><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#note6">6</a></small></sup></p>
+
+<p>So this seems workable, as far as a basic design plan goes.&nbsp; The idea of creating a date module from scratch is so daunting that I would never even bother to try it.&nbsp; But taking a few well-respected modules and gluing them together in a new&mdash; and hopefully useful!&mdash; way&nbsp;...&nbsp;well, that&rsquo;s feasible.&nbsp; A reasonable challenge.</p>
+
+<p>Not that there won&rsquo;t be obstacles&nbsp;...</p>
+
+<p><br />
+<a href="http://blogs.perl.org/users/buddy_burden/2015/10/-a-date-with-cpan-part-3-paving-while-driving.html">Next time</a>, we&rsquo;ll settle a few outstanding questions: I&rsquo;ll look at more date modules that people have suggested in the comments, we&rsquo;ll lay out a design strategy (i.e. slightly more specific than what I&rsquo;ve done here), and maybe even choose a name for the thing.</p>
+
+<p><br />
+<div style="line-height: 70%;"><br />
+__________</p>
+
+<p><small><p><a name="note1">1</a> This will repeat some of my responses to thoughtful comments left for me on the last post in this series.&nbsp; Thanks to the authors of those comments for forcing me to crystallize my goals here.</p><br />
+<p><a name="note2">2</a> And such as some of us write a <strong>lot</strong>.</p><br />
+<p><a name="note3">3</a> Of course, if you&rsquo;re stuck on a machine with 32-bit ints, or an unsigned <code class="prettyprint">time_t</code>, you&rsquo;re probably stuck with an older Perl, which probably wouldn&rsquo;t have such workarounds anyway.&nbsp; Probably.</p><br />
+<p><a name="note4">4</a> Provided by Dave Rolsky in the comments to the last post.</p><br />
+<p><a name="note5">5</a> Yes, that&rsquo;s a mildly mixed metaphor.&nbsp; But who doesn&rsquo;t love cake, and gravy?&nbsp; Mmmmmm&nbsp;...&nbsp;gravy cake&nbsp;...</p><br />
+<p><a name="note6">6</a> It turns out that this is trickier than it sounds.&nbsp; But that&rsquo;s a story for a future post.</p><br />
+</small></div></p>
+                        </div><!-- .entry-body -->
+                        
+                        <div class="entry-meta-2 pkg">
+                            <ul>
+                                <li><a href="#comments">6 comments</a></li>
+                                <!-- <li><a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html">0 votes</a></li> -->
+                            </ul>
+                        </div>
+                    </div><!-- #entry-7070 -->
+                    
+
+
+
+
+
+<div id="comments" class="comments">
+
+
+    
+    
+        
+    <h2 class="comments-header">6 Comments</h2>
+    
+    <div id="comments-content" class="comments-content" style="clear: left;">
+        
+        <div id="comment-1617670" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">Christian Hansen</span>
+
+                    | <a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#comment-1617670"><abbr class="published" title="2015-10-04T22:08:57+00:00">October  4, 2015 10:08 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1617670, 'Christian Hansen')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>You cannot parse an arbitrary date or date with time without heuristics, you have declared that you intend to use Date::Parse and Time::ParseDate to parse your dates, both of those modules uses heuristics.  </p>
+
+<p>How do you intend to deal with an abbreviated zone like CST? Central Standard Time  (North America / Central America), Cuba Standard Time, China Standard Time or  Central Standard Time (Australia)? What about abbreviated zones that has recently changed, like MSK (Moscow Standard Time)?</p>
+
+<p>How do you intend to deal with numerical only dates? DD/MM/YYYY, MM/DD/YYYY, YY/MM/DD, MM/DD/YY or DD/MM/YY?</p>
+
+<p>It's seems to me that you your are trying to solve a problem that you have very little real experience with. Perhaps you should gain some real experience with temporal data before you try to solve it?</p>
+
+<p>--<br />
+chansen<br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-1617678" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">Christian Hansen</span>
+
+                    | <a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#comment-1617678"><abbr class="published" title="2015-10-04T22:37:14+00:00">October  4, 2015 10:37 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1617678, 'Christian Hansen')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>BTW, there is a reason for <a href="https://en.wikipedia.org/wiki/ISO_8601" rel="nofollow">ISO 8601</a> and why <a href="https://metacpan.org/pod/Time::Moment" rel="nofollow"> Time::Moment</a> implements it ;)</p>
+
+<p>--<br />
+chansen<br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-1617717" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <a class="commenter-profile" href="http://domm.plix.at"><img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+                    <span class="vcard author"><a title="http://domm.plix.at" href="http://domm.plix.at" rel="nofollow">domm</a></span>
+
+                    | <a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#comment-1617717"><abbr class="published" title="2015-10-05T08:19:59+00:00">October  5, 2015  8:19 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1617717, 'domm')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>At some YAPC::Europe some time ago I've seen this Java DateTime API mentioned in a talk:<br />
+<a href="https://today.java.net/pub/a/today/2008/09/18/jsr-310-new-java-date-time-api.html" rel="nofollow">JSR-310</a>, and found it quite nice (haven't looked at it since, though..)</p>
+
+<p>Maybe you can find some inspiration there. But I do think that Time::Moment is quite perfect (except that it should include output methods for common time formats)</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-1617812" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">john napiorkowski</span>
+
+                    | <a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#comment-1617812"><abbr class="published" title="2015-10-06T20:35:47+00:00">October  6, 2015  8:35 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1617812, 'john napiorkowski')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>"My preliminary poking around indicates I should be able to handle dates from 1-Jan-1000 to 31-Dec-2899, which is a pretty big range.  But thereâs still a lot of time outside that range."</p>
+
+<p>LOL, dude that's pretty much ALL of time outside that range :)</p>
+
+<p>Sorry, couldn't help myself, being a Dr Who fan and all.  Best of luck!</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-1617816" class="comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" />
+
+                    <span class="vcard author">Christian Hansen</span>
+
+                    | <a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#comment-1617816"><abbr class="published" title="2015-10-06T21:09:35+00:00">October  6, 2015  9:09 PM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1617816, 'Christian Hansen')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>First, I would like to apology for my first message, it came out a lot harsher than I intended!</p>
+
+<p>Just because Time::Piece is in core doesn't mean it's stable! Time::Piece has several quirks: </p>
+
+<p>Time::Piece->strptime() parses any given string as being in the UTC/GMT regardless if the format string contains the conversion specifiers %z or %Z. </p>
+
+<p>Time::Piece->strptime()  is hardcoded to use the C locale while Time:Piece->strftime() subjective to the locale.</p>
+
+<p>If you still want to use Time::Piece as a base, I encourage you to use Time::Piece internally and delegate to it instead of inheriting from it.</p>
+
+<p>BTW, Stability is proven by your test units, not by the module that you chose as a base!</p>
+
+<p>--<br />
+chansen<br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    
+        
+        <div id="comment-1617923" class="comment entry-author-comment">
+    <div class="inner">
+        <div class="comment-header">
+            <div class="asset-meta">
+                <span class="byline">
+                    <a class="commenter-profile" href="http://blogs.perl.org/users/buddy_burden/"><img alt="Author Profile Page" src="http://blogs.perl.org/mt/mt-static/images/comment/mt_logo.png" width="16" height="16" /></a>
+
+                    <span class="vcard author"><a title="http://blogs.perl.org/users/buddy_burden/" href="http://blogs.perl.org/users/buddy_burden/" rel="nofollow">Buddy Burden</a></span>
+
+                    | <a href="http://blogs.perl.org/users/buddy_burden/2015/10/a-date-with-cpan-part-2-target-first-aim-afterwards.html#comment-1617923"><abbr class="published" title="2015-10-09T01:38:08+00:00">October  9, 2015  1:38 AM</abbr></a>
+
+                    | <a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(1617923, 'Buddy Burden')">Reply</a>
+
+                </span>
+            </div>
+        </div>
+        <div class="comment-content">
+            <p>Thanks again to everyone for more great comments!&nbsp; Once again, I&rsquo;m going to answer everyone&rsquo;s thoughts here in one post; hopefully that&rsquo;s okay.</p>
+
+<p>First, <strong>Christian Hansen,</strong> author of Time::Piece, added 3 comments.&nbsp; Let&rsquo;s start with the last first:</p>
+
+<blockquote>First, I would like to apology for my first message, it came out a lot harsher than I intended!</blockquote>
+
+<p>Well, it did sound a bit harsh.&nbsp; But I&rsquo;ll try to address your concerns without taking offense. :-)</p>
+
+<blockquote>You cannot parse an arbitrary date or date with time without heuristics, you have declared that you intend to use Date::Parse and Time::ParseDate to parse your dates, both of those modules uses heuristics.</blockquote>
+
+<p>I&rsquo;m not sure what I said to make you think I didn&rsquo;t want or wasn&rsquo;t planning to use heuristics.&nbsp; I&rsquo;ve got nothing against heuristics. :-)</p>
+
+<blockquote>How do you intend to deal with an abbreviated zone like CST? Central Standard Time (North America / Central America), Cuba Standard Time, China Standard Time or Central Standard Time (Australia)? What about abbreviated zones that has recently changed, like MSK (Moscow Standard Time)?
+
+<p>How do you intend to deal with numerical only dates? DD/MM/YYYY, MM/DD/YYYY, YY/MM/DD, MM/DD/YY or DD/MM/YY?</p></blockquote>
+
+<p>For better or worse, the answer to these questions will be: however Date::Parse and/or Time::ParseDate handles them.&nbsp; I&rsquo;m going to farm out to those modules to do this difficult work, and they&rsquo;ve made those difficult choices.&nbsp; Their decisions won&rsquo;t always work for everyone, it&rsquo;s true.&nbsp; But their quirks and foibles have been around years now and people mostly know them.</p>
+
+<p>In the end, my handling of arbitrary date string formats will not be perfect.&nbsp; But it will still be better than what&rsquo;s offered by most existing date modules, which is nothing.</p>
+
+<blockquote>It&rsquo;s seems to me that you your are trying to solve a problem that you have very little real experience with. Perhaps you should gain some real experience with temporal data before you try to solve it?</blockquote>
+
+<p>Well, I suppose it depends on what you&rsquo;re talking about. :-)&nbsp; Do I have any experience with writing code to <em>manipulate</em> date values?&nbsp; No, not really (not much, anyway).&nbsp; This is one of the many, many reasons I don&rsquo;t want to write something from scratch.&nbsp; OTOH, do I have experience writing code to <em>interface</em> with date values?&nbsp; Yes.&nbsp; In fact, my experience interfacing with date values in Perl is equal to my experience coding in Perl in general.&nbsp; In my 19 years of Perl programming, I can guarantee you that not a single year has passed where I didn&rsquo;t have to fiddle with dates at least a few times, and several of those years contained times when I did little else.&nbsp; (For instance, I once worked on a database interface system&mdash; a wrapper around DBI&mdash; which had to deal with dates in a variety of storage formats and convert back and forth, do date math, etc.&nbsp; That was several months of my life where I was practically drowning in dates.)&nbsp; So it&rsquo;s true that I don&rsquo;t feel qualified to write a date module from scrtach, as you have done.&nbsp; But I believe I am qualified to put a new interface on an existing one.</p>
+
+<p>Besides, even if I <em>did</em> feel qualified to write something from scratch, I wouldn&rsquo;t want to, as I explained in the article.&nbsp; Which brings us to your other comments, regarding stability:</p>
+
+<blockquote>Just because Time::Piece is in core doesn&rsquo;t mean it&rsquo;s stable!&nbsp;...
+
+<p>:</p>
+
+<p>BTW, Stability is proven by your test units, not by the module that you chose as a base!</p></blockquote>
+
+<p>I think we&rsquo;re  using &ldquo;stability&rdquo; in different ways here.&nbsp; Note how I very carefully defined it above:</p>
+
+<blockquote><strong>Stability:</strong> People need to have confidence in it.</blockquote>
+
+<p>In an ideal world, stability would be about correctness.&nbsp; But here&rsquo;s the thing: if I (or you, or anyone) writes a new module, it could very well be 100% correct.&nbsp; However, a new user doesn&rsquo;t <em>know</em> that.&nbsp; They could take the author&rsquo;s word for it, but they probably won&rsquo;t.&nbsp; They could do a detailed analysis of the code itself, but they probably won&rsquo;t&mdash; who has the time?&nbsp; You point out that the unit tests prove the stability, but that&rsquo;s only true if the tests are well-written and provide complete coverage&nbsp;... which, again, the potential user can&rsquo;t know without doing a detailed analysis (this time of the test code), which, again they probably won&rsquo;t.&nbsp; So unfortunately it&rsquo;s not the <em>reality</em> of correctness which is important, but rather the <em>perception</em> of correctness.&nbsp; I.e., the confidence.</p>
+
+<p>And, like it or not, there&rsquo;s a certain amount of confidence which is inspired by being chosen to be a core module.&nbsp; Most users of Perl are going to feel (rightly or wrongly) that the modules in core have been better vetted, better tested, and more used in real-world applications.&nbsp; (And at least that last one is hard to argue.)&nbsp; DateTime isn&rsquo;t core, but it&rsquo;s been around for 12 years, been blessed by many Perl luminaries, and has earned its reputation.&nbsp; These sorts of things are intangible, but I don&rsquo;t find them particularly controversial.</p>
+
+<blockquote>Time::Piece has several quirks:
+
+<p>Time::Piece-&gt;strptime() parses any given string as being in the UTC/GMT regardless if the format string contains the conversion specifiers %z or %Z.</p>
+
+<p>Time::Piece-&gt;strptime() is hardcoded to use the C locale while Time:Piece-&gt;strftime() subjective to the locale.</p></blockquote>
+
+<p>Happily, I don&rsquo;t intend to use Time::Piece&rsquo;s <code>strptime</code> for anything at all. :-D</p>
+
+<blockquote>If you still want to use Time::Piece as a base, I encourage you to use Time::Piece internally and
+delegate to it instead of inheriting from it.</blockquote>
+
+<p>That&rsquo;s still a distinct possibility.&nbsp; There are parts of Time::Piece&rsquo;s interface that I&rsquo;m not thrilled about, and, by using delegation, I could control exactly which parts I support and which ones I don&rsquo;t.&nbsp; However, there is a pretty big advantage to using inheritance: all the code in the world which expects a Time::Piece object will then just take my object transparently.&nbsp; On top of that, if Time::Piece&rsquo;s interface is ever improved or extended, I get that for free.&nbsp; I think users of my module will want those advantages, and I&rsquo;m loath to deny them just on account of being snooty about some methods I don&rsquo;t like. :-)</p>
+
+<p>Good comments, Christian!&nbsp; I see several points here that I will likely expand on in my next post.&nbsp; Thanks for stopping by.</p>
+
+<p>Next up, <strong>domm</strong> writes:</p>
+
+<blockquote>At some YAPC::Europe some time ago I&rsquo;ve seen this Java DateTime API mentioned in a talk:
+JSR-310, and found it quite nice (haven&rsquo;t looked at it since, though..)
+
+<p>Maybe you can find some inspiration there.</p></blockquote>
+
+<p>Thanks!&nbsp; I&rsquo;ll take a look.</p>
+
+<p>Finally, my friend and coworker <strong>jnap</strong> notes:</p>
+
+<blockquote>&ldquo;My preliminary poking around indicates I should be able to handle dates from 1-Jan-1000 to 31-Dec-2899, which is a pretty big range. But thereâs still a lot of time outside that range.&rdquo;
+
+<p>LOL, dude that&rsquo;s pretty much ALL of time outside that range :)</p>
+
+<p>Sorry, couldn&rsquo;t help myself, being a Dr Who fan and all.</p></blockquote>
+
+<p>Yes, on a geological scale, it&rsquo;s a pretty small slice of time we&rsquo;re talking about. ;-&gt;  But, on the other hand, it certainly covers every date I think I&rsquo;ve ever had to code into a piece of software throughout my entire career, and likely every one I ever will encounter in the future too.&nbsp; Dr. Who will just have to go get his own date module. :-D</p>
+
+<p>&mdash;  &mdash;  &mdash; </p>
+
+<p>Keep those cards and letters coming, guys!&nbsp; I love all the feedback.<br />
+</p>
+        </div>
+    </div>
+</div>
+        
+    </div>
+        
+    
+    
+
+    
+    
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header">Leave a comment</h2>
+        <div class="comments-open-content">
+
+        
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="http://blogs.perl.org/mt/mt-comments.fcgi" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="7070" />
+                <input type="hidden" name="__lang" value="en" />
+                <input type="hidden" name="parent_id" value="" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+                    <div id="comment-form-name">
+                        <label for="comment-author">Name</label>
+                        <input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-email">
+                        <label for="comment-email">Email Address</label>
+                        <input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-url">
+                        <label for="comment-url">URL</label>
+                        <input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
+                        <label for="comment-bake-cookie">Remember personal info?</label>
+                    </div>
+                </div>
+                <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-text">
+                    <label for="comment-text">Comments
+                    (You may use HTML tags for style)</label>
+                    <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+                    <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="Preview" onclick="this.form.preview.value='1';" />
+                    <input type="submit" accesskey="s" name="post" id="comment-submit" value="Submit" />
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+    mtAttachEvent("load", mtEntryOnLoad);
+    mtAttachEvent("unload", mtEntryOnUnload);
+    //-->
+    </script>
+    
+
+
+</div>
+
+
+
+</div><!-- #content-main -->
+            
+            <div id="content-aux">
+            
+                
+                <div class="module-aux pkg" id="module-aux-about-author-1580">
+                <div class="module-inner">
+                    <h3>About Buddy Burden</h3>
+                    <p><img class="authorpic" src="http://blogs.perl.org/mt/mt-static/support/assets_c/2011/11/glassfeet-hi-bg-thumb-72x72-701.png" alt="user-pic" />
+	            8 years in California, 19 years in Perl, 28 years in computers, 48 years in bare feet.</p>
+                    <div class="more-link"><a href="http://blogs.perl.org/mt/mt-cp.fcgi?__mode=view&amp;id=1580">More info &raquo;</a></div>
+                </div>
+                </div><!-- #module-aux-about-author -->
+
+
+
+
+                
+            
+            
+            <div class="module-aux pkg" id="module-aux-search">
+                <div class="module-inner">
+                    
+                    
+                    <h3>Search this blog</h3>
+                    
+                    
+					
+                    <div id="search-form-aux">
+                        <form method="get" action="http://blogs.perl.org/mt/mt-search.fcgi">
+                    
+                            <input type="hidden" name="IncludeBlogs" value="1118" />
+                    
+                            <input type="hidden" name="limit" value="20" />
+                            <label for="search">Search</label>
+                            <input id="local-search" class="query" name="search" value="" />
+                            <input class="submit" type="submit" value="Go" />
+                        </form>
+                    </div><!-- #search-form-aux -->
+                </div>
+                </div><!-- #module-aux-search -->
+                    
+
+            
+            
+                
+                
+                
+                
+            
+
+            </div><!-- #content-aux -->
+
+
+
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+
+        <div id="footer">
+        <div id="footer-inner" class="pkg">
+            <ul>
+                <li class="first"><a href="http://github.com/blogs-perl-org/blogs.perl.org/issues">Feedback welcome</a></li>
+                <li>Hosted by <a href="http://dave.org.uk">Dave Cross</a> of <a href="http://mag-sol.com/">Magnum Solutions</a> and <a href="http://aaroncrane.co.uk/">Aaron Crane</a> of <a href="http://cutbot.net/">Cutbot</a></li>
+            </ul>
+            <ul>
+                <li class="first">Free blog hosting for users of the <a href="http://perl.org">Perl Programming Language</a></li>
+            </ul> 
+
+            <div class="powered-by"><a href="http://www.movabletype.com/" target="_blank">Powered by Movable Type</a></div>
+        </div><!-- #footer-inner -->
+        </div><!-- #footer -->
+            
+        </div><!-- #content-inner -->
+        </div><!-- #content -->
+        
+    </div><!-- #container-inner -->
+    </div><!-- #container -->
+
+    
+
+</body>
+</html>
+
+
+
+
+
