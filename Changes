@@ -1,5 +1,11 @@
 Revision history for Acme-CPANLists-Import
 
+0.02    2016-07-19 (PERLANCAR)
+
+	- update: Re-run with App::CreateAcmeCPANListsImportModules 0.04 to
+	  exclude false positives [RT#116253].
+
+
 0.01    2016-02-21 (PERLANCAR)
 
         - First release.
