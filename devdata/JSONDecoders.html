@@ -42,7 +42,7 @@
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet">
   
   
-  <link href="/css/style.css?15" rel="stylesheet">
+  <link href="/css/style.css?16" rel="stylesheet">
   
   
   <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
@@ -51,13 +51,12 @@
   <script src="//vjs.zencdn.net/4.12/video.js"></script>
   
   <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
   
-  <script src="/javascripts/perlmaven.js?15"></script>
+  <script src="/javascripts/perlmaven.js?16"></script>
 
 
 </head>
-<body ng-app="PerlMavenApp" ng-controller="PerlMavenCtrl">
+<body>
 
 
 <!-- start facebook SDK ?? -->
@@ -146,7 +145,7 @@
             
 
             
-              <li><form ng-submit="search()"><input id="search_box" ng-model="search_term" ng-change="autocomplete()" type="text" data-provide="typeahead" data-items="4" ></form></li>
+              <li><form id="search_form"><input id="search_box" type="text" data-provide="typeahead" data-items="4" ></form></li>
             
 
             
@@ -208,14 +207,14 @@
 
 
 
-<div ng-show="show_autocomplete">
+<div id="show_autocomplete">
 <h2>Search for <span id="term">'{{search_term}}'</span></h2>
 <ul>
    <li ng-repeat="r in autocomplete_results"><a href="/search/{{r | encodeURIComponent}}">{{r}}</a></li>
 </ul>
 </div>
 
-<div ng-hide="show_autocomplete">
+<div id="show_content">
 <h1>Comparing the speed of JSON decoders</h1>
 
 <div class="adsense-wide">
@@ -235,13 +234,13 @@
   <div id="indexes">
     <ul>
       
-         <li><button class="btn btn-mini btn-primary kw-button" type="button" ng-click="search_index('JSON')">JSON</button></li>
+         <li><a class="btn btn-mini btn-primary kw-button" type="button" href="/search/JSON">JSON</a></li>
       
-         <li><button class="btn btn-mini btn-primary kw-button" type="button" ng-click="search_index('JSON::XS')">JSON::XS</button></li>
+         <li><a class="btn btn-mini btn-primary kw-button" type="button" href="/search/JSON::XS">JSON::XS</a></li>
       
-         <li><button class="btn btn-mini btn-primary kw-button" type="button" ng-click="search_index('Cpanel::JSON::XS')">Cpanel::JSON::XS</button></li>
+         <li><a class="btn btn-mini btn-primary kw-button" type="button" href="/search/Cpanel::JSON::XS">Cpanel::JSON::XS</a></li>
       
-         <li><button class="btn btn-mini btn-primary kw-button" type="button" ng-click="search_index('Benchmark')">Benchmark</button></li>
+         <li><a class="btn btn-mini btn-primary kw-button" type="button" href="/search/Benchmark">Benchmark</a></li>
       
     </ul>
   </div>
@@ -257,19 +256,15 @@
 
 <div role="main" id="main">
 <p>
-
 Recently I worked on a project at a client where we had to read a JSON file and insert data from it into a database.
 Without thinking much I started to use the <a href="https://metacpan.org/pod/JSON">JSON</a> module.
 <p>
-
 We encountered some speed issues - our script ran more than 30 minutes - so I set out to improve the speed.
 <p>
-
 I knew it will be difficult, somehow I still don't like checking the speed of SQL statements.
 <p>
 
 <p>
-
 <div id="screencast"><video id="video_1" class="video-js vjs-default-skin"
   controls preload="auto"
   data-setup='{"controls":true}'>
@@ -283,35 +278,26 @@ Download:
 </div>
 </div>
 <p>
-
 <a href="https://www.youtube.com/watch?v=xGJkTOBvmY4">YouTube</a>
 <p>
-
 In other cases I might have started by profiling the script, but our script had two very distinct parts, reading 
 the JSON file and then inserting data to the database, so even before involving some heavy weight profiling, 
 I added a print statement just after the JSON was read and ran the script.
 <p>
-
 When after a few minutes I still did not see the printing I knew we have a problem reading the JSON file.
 It was a big file and I started to suspect that we might have ran out of memory and started swapping,
 or that parsing JSON was so slow.
 <p>
-
 But I recalled there is a <a href="https://metacpan.org/pod/JSON::XS">JSON::XS</a>, it must be faster.
 <p>
-
 I installed this module, updated the script and then ran it again.
 After 30 seconds it was done.
 <p>
-
 <p>
-
 <h2>Benchmarking JSON and JSON::XS</h2>
 <p>
-
 Let's compare the speed of these two modules
 <p>
-
 <b>examples/benchmark_json.pl</b><br><pre class="prettyprint linenums language-perl">
 use strict;
 use warnings;
@@ -336,18 +322,14 @@ sub create_json {
 
 </pre>
 <p>
-
 The <span class="inline_code">create_json</span> function will create a JSON file using the <span class="inline_code">encode_json</span> function of the JSON module.
 <p>
-
 The <span class="inline_code">cmpthese</span> function that comes from the <a href="https://metacpan.org/pod/Benchmark">Benchmark</a> module will run both
 anonymous functions 10000 times. (The number it received as the first parameter.) Then it prints how many times the function could be
 called if it ran for a second, and a comparison table showing the relative speed of the methods.
 <p>
-
 To my great surprise they were the same:
 <p>
-
 <pre class="linenums">
 $ time perl benchmark_json.pl 
             Rate JSON::XS     JSON
@@ -359,24 +341,19 @@ user    0m1.501s
 sys 0m0.016s
 </pre>
 <p>
-
 <h2>Reading the docs, fixing the benchmark</h2>
 <p>
-
 I know there are some pure-perl modules on CPAN that will use their XS counter-part if it is loaded in the memory.
 They might even load it on our behalf if it is installed. (eg. Text::CSV will load Text::CSV_XS if the latter is available.)
 I looked at the documentation of the <a href="https://metacpan.org/pod/JSON">JSON</a> module and it turns out
 it is only an empty shell that uses either the pure perl implementation in <a href="https://metacpan.org/pod/JSON::PP">JSON::PP</a>,
 or, if it is available then the XS version <a href="https://metacpan.org/pod/JSON::XS">JSON::XS</a>.
 <p>
-
 So in the above benchmark I effectively compared the JSON::XS module with itself. Very useful.
 <p>
-
 I had to change the code in 3 places adding ::PP after JSON. (OK, the name of the benchmark could have stayed 'JSON',
 but it looks nicer this way.
 <p>
-
 <pre class="prettyprint linenums language-perl">
 use JSON::PP ();
 
@@ -386,10 +363,8 @@ cmpthese(10000, {
 });
 </pre>
 <p>
-
 The result of running the script is now:
 <p>
-
 <pre class="linenums">
 $ time perl benchmark_json.pl 
             Rate JSON::PP JSON::XS
@@ -401,29 +376,22 @@ user    0m45.747s
 sys 0m0.086s
 </pre>
 <p>
-
 Wow, the elapsed time measured by the external <span class="inline_code">time</span> command went from 1 second to 45 seconds and the
 table printed by <span class="inline_code">cmpthese</span> is very clear. the XS version is 57.42 times faster than the PP version.
 That explains the extreme speed-up we got in our script reading the JSON file.
 <p>
-
 <p>
-
 <h2>Cpanel::JSON::XS</h2>
 <p>
-
 In another conversation I have heard the module <a href="https://metacpan.org/pod/Cpanel::JSON::XS">Cpanel::JSON::XS</a>
 mentioned. It felt really strange, why is there a generic module named after a company and I did not even take a look back then.
 Now I looked at it and even installed. As it turns out this is just a fork of the JSON::XS module with some fixes and 
 a public version control system. So it is actually more open than the original version.
 <p>
-
 I installed the module and ran a benchmark with that too:
 <p>
-
 The interesting part looks like this:
 <p>
-
 <pre class="prettyprint linenums language-perl">
 use JSON::XS ();
 use Cpanel::JSON::XS ();
@@ -437,27 +405,21 @@ cmpthese(10000, {
 });
 </pre>
 <p>
-
 And the result? They have the same speed. Maybe 1% difference that can be just a side-effect of the benchmarking.
 So it is probably better to use the Cpanel::JSON::XS.
 <p>
-
 <h2>JSON::MaybeXS</h2>
 <p>
-
 I am not sure why is this need to be in a separate module (and not part of the JSON module),
 but <a href="https://metacpan.org/pod/JSON::MaybeXS">JSON::MaybeXS</a> is also a "shell" loading
 either Cpanel::JSON::XS, or JSON::XS, or JSON::PP in that order.
 <p>
-
 So if you want to make sure, your JSON decoding is fast and correct, use Cpanel::JSON::XS.
 <p>
-
 If you want to give people more choices  then use JSON::MaybeXS.
 That way the users or system administrators of your code can install Cpanel::JSON::XS if they need
 speed and have a C compiler, or can keep using JSON::PP if they don't have a C compiler or just don't need the extra speed.
 <p>
-
 
 </div>
 
